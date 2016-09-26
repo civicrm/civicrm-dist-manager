@@ -1,3 +1,8 @@
+civi_upgrade_manager:
+    resource: "@CiviUpgradeManagerBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
