@@ -1,0 +1,4 @@
+
+check:
+    path:     /check
+    defaults: { _controller: CiviUpgradeManagerBundle:Check:check }
