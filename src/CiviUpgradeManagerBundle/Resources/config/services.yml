@@ -2,3 +2,6 @@ services:
 #    civi_upgrade_manager.example:
 #        class: CiviUpgradeManagerBundle\Example
 #        arguments: ["@service_id", "plain_value", %parameter%]
+  civi_upgrade_manager.dist_cache:
+    class: 'Doctrine\Common\Cache\FilesystemCache'
+    arguments: ['%kernel.cache_dir%/dist']
