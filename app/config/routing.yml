@@ -1,6 +1,6 @@
 civi_upgrade_manager:
-    resource: "@CiviUpgradeManagerBundle/Controller/"
-    type:     annotation
+    resource: "@CiviUpgradeManagerBundle/Resources/config/routing.yml"
+    #type:     annotation
     prefix:   /
 
 app:
