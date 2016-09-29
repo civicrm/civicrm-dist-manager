@@ -19,7 +19,12 @@ class CheckController extends Controller {
     try {
       switch ($request->get('stability')) {
         case 'rc':
-          return $this->createJson($this->getLatestRc(), 200);
+          $latestRc = $this->getLatestRc();
+          $stable = $this->getLatestStable();
+          $result
+            = (version_compare($latestRc['version'], $stable['version'], '>='))
+            ? $latestRc : $stable;
+          return $this->createJson($result, 200);
 
         case 'stable':
           return $this->createJson($this->getLatestStable(), 200);
@@ -30,10 +35,11 @@ class CheckController extends Controller {
         default:
           return $this->createJson(array(
             'rev' => NULL,
-            'message' => 'Missing required argument: stability=(nightly|rc|stable)'
+            'message' => 'Missing required argument: stability=(nightly|rc|stable)',
           ), 404);
       }
-    } catch (\RuntimeException $e) {
+    }
+    catch (\RuntimeException $e) {
       /** @var Logger $logger */
       $logger = $this->get('logger');
       $logger->error('Failed to check on available tarballs', array(
@@ -55,6 +61,7 @@ class CheckController extends Controller {
 
   /**
    * @return array
+   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestStable() {
     // Ex: $result['4.7']['releases'][0]['version'] == '4.7.alpha1';
@@ -68,62 +75,29 @@ class CheckController extends Controller {
       }
     }
 
-    return array(
-      'rev' => $rev,
-      'tar' => array(
-        'Backdrop' => sprintf('%s/civicrm-%s-backdrop-unstable.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev),
-        'Drupal' => sprintf('%s/civicrm-%s-drupal.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev),
-        'Drupal6' => sprintf('%s/civicrm-%s-drupal6.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev),
-        'Joomla' => sprintf('%s/civicrm-%s-joomla.zip',
-          self::STABLE_DOWNLOAD_URL, $rev),
-        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
-        'L10n' => sprintf('%s/civicrm-%s-l10n.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev),
-        'WordPress' => sprintf('%s/civicrm-%s-wordpress.zip',
-          self::STABLE_DOWNLOAD_URL, $rev),
-      ),
-      'git' => array(
-        'civicrm-core' => array('commit' => $rev),
-        'civicrm-joomla' => array('commit' => $rev),
-        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
-        'civicrm-packages' => array('commit' => $rev),
-        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
-        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
-        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
-        'civicrm-wordpress' => array('commit' => $rev),
-      ),
-    );
+    return $this->createBackfilledStableMetadata($rev);
   }
 
   /**
    * @return array
+   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestRc() {
     // Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
     $nightlies = $this->fetchJson(self::NIGHTLY_SUMMARY_URL);
-    $latestRc = 0;
-    foreach ($nightlies as $name => $nightly) {
-      if (!preg_match(';-rc$;', $name)) {
-        continue;
-      }
-      if (version_compare($name, $latestRc, '>')) {
-        $latestRc = $name;
-      }
-    }
+    $latestRc = $this->findLatestRc($nightlies);
 
     if (isset($nightlies[$latestRc])) {
       return $nightlies[$latestRc];
     }
     else {
-      return array();
+      return NULL;
     }
   }
 
   /**
    * @return array
+   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestNightly() {
     // Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
@@ -164,6 +138,59 @@ class CheckController extends Controller {
       }
     }
     return json_decode($cache->fetch($url), 1);
+  }
+
+  /**
+   * @param array $nightlies
+   *   Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
+   * @return int|string
+   */
+  protected function findLatestRc($nightlies) {
+    $latestRc = 0;
+    foreach ($nightlies as $name => $nightly) {
+      if (!preg_match(';-rc$;', $name)) {
+        continue;
+      }
+      if (version_compare($name, $latestRc, '>')) {
+        $latestRc = $name;
+      }
+    }
+    return $latestRc;
+  }
+
+  /**
+   * @param $rev
+   * @return array
+   */
+  protected function createBackfilledStableMetadata($rev) {
+    return array(
+      'rev' => $rev,
+      'tar' => array(
+        'Backdrop' => sprintf('%s/civicrm-%s-backdrop-unstable.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev),
+        'Drupal' => sprintf('%s/civicrm-%s-drupal.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev),
+        'Drupal6' => sprintf('%s/civicrm-%s-drupal6.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev),
+        'Joomla' => sprintf('%s/civicrm-%s-joomla.zip',
+          self::STABLE_DOWNLOAD_URL, $rev),
+        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
+        'L10n' => sprintf('%s/civicrm-%s-l10n.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev),
+        'WordPress' => sprintf('%s/civicrm-%s-wordpress.zip',
+          self::STABLE_DOWNLOAD_URL, $rev),
+      ),
+      'git' => array(
+        'civicrm-core' => array('commit' => $rev),
+        'civicrm-joomla' => array('commit' => $rev),
+        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
+        'civicrm-packages' => array('commit' => $rev),
+        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
+        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
+        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
+        'civicrm-wordpress' => array('commit' => $rev),
+      ),
+    );
   }
 
 }
