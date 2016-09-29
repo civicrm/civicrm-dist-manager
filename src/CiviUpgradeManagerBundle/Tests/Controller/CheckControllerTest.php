@@ -18,11 +18,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-drupal6(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-drupal6(\-\d+).tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-wordpress(\-\d+).zip;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-wordpress(\-\d+).zip;',
       $data['tar']['WordPress']);
   }
 
@@ -38,11 +38,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-drupal6(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-drupal6(\-\d+).tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://dist.civicrm.org/by-hash/.*/civicrm-[\d\.]+-wordpress(\-\d+).zip;',
+    $this->assertRegex(';^https://dist.civicrm.org/.*/civicrm-[\d\.]+-wordpress(\-\d+).zip;',
       $data['tar']['WordPress']);
   }
 
