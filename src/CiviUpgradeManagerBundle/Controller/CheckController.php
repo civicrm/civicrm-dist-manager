@@ -164,6 +164,7 @@ class CheckController extends Controller {
    */
   protected function createBackfilledStableMetadata($rev) {
     return array(
+      'version' => $rev,
       'rev' => $rev,
       'tar' => array(
         'Backdrop' => sprintf('%s/civicrm-%s-backdrop-unstable.tar.gz',
