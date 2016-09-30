@@ -22,7 +22,7 @@ class CheckController extends Controller {
           $latestRc = $this->getLatestRc();
           $stable = $this->getLatestStable();
           $result
-            = (version_compare($latestRc['version'], $stable['version'], '>='))
+            = ($latestRc && version_compare($latestRc['version'], $stable['version'], '>='))
             ? $latestRc : $stable;
           return $this->createJson($result, 200);
 
