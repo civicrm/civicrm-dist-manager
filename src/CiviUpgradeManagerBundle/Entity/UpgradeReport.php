@@ -17,7 +17,6 @@ class UpgradeReport {
    *
    * @ORM\Column(name="name", type="string", length=64, nullable=false)
    * @ORM\Id
-   * @ORM\GeneratedValue(strategy="IDENTITY")
    */
   private $name;
 
@@ -47,7 +46,7 @@ class UpgradeReport {
    *
    * @ORM\Column(name="downloadUrl", type="string", length=255, nullable=true)
    */
-  private $downloadurl;
+  private $downloadUrl;
 
   /**
    * @var string
@@ -75,7 +74,7 @@ class UpgradeReport {
    *
    * @ORM\Column(name="startReport", type="text", length=65535, nullable=true)
    */
-  private $startreport;
+  private $startReport;
 
   /**
    * @var \DateTime
@@ -103,7 +102,7 @@ class UpgradeReport {
    *
    * @ORM\Column(name="upgradeReport", type="text", length=65535, nullable=true)
    */
-  private $upgradereport;
+  private $upgradeReport;
 
   /**
    * @var \DateTime
@@ -117,7 +116,7 @@ class UpgradeReport {
    *
    * @ORM\Column(name="finishReport", type="text", length=65535, nullable=true)
    */
-  private $finishreport;
+  private $finishReport;
 
   /**
    * @var \DateTime
@@ -192,15 +191,15 @@ class UpgradeReport {
   /**
    * @return string
    */
-  public function getDownloadurl() {
-    return $this->downloadurl;
+  public function getDownloadUrl() {
+    return $this->downloadUrl;
   }
 
   /**
-   * @param string $downloadurl
+   * @param string $downloadUrl
    */
-  public function setDownloadurl($downloadurl) {
-    $this->downloadurl = $downloadurl;
+  public function setDownloadUrl($downloadUrl) {
+    $this->downloadUrl = $downloadUrl;
   }
 
   /**
@@ -248,15 +247,15 @@ class UpgradeReport {
   /**
    * @return string
    */
-  public function getStartreport() {
-    return $this->startreport;
+  public function getStartReport() {
+    return $this->startReport;
   }
 
   /**
-   * @param string $startreport
+   * @param string $startReport
    */
-  public function setStartreport($startreport) {
-    $this->startreport = $startreport;
+  public function setStartReport($startReport) {
+    $this->startReport = $startReport;
   }
 
   /**
@@ -304,15 +303,15 @@ class UpgradeReport {
   /**
    * @return string
    */
-  public function getUpgradereport() {
-    return $this->upgradereport;
+  public function getUpgradeReport() {
+    return $this->upgradeReport;
   }
 
   /**
-   * @param string $upgradereport
+   * @param string $upgradeReport
    */
-  public function setUpgradereport($upgradereport) {
-    $this->upgradereport = $upgradereport;
+  public function setUpgradeReport($upgradeReport) {
+    $this->upgradeReport = $upgradeReport;
   }
 
   /**
@@ -332,15 +331,15 @@ class UpgradeReport {
   /**
    * @return string
    */
-  public function getFinishreport() {
-    return $this->finishreport;
+  public function getFinishReport() {
+    return $this->finishReport;
   }
 
   /**
-   * @param string $finishreport
+   * @param string $finishReport
    */
-  public function setFinishreport($finishreport) {
-    $this->finishreport = $finishreport;
+  public function setFinishReport($finishReport) {
+    $this->finishReport = $finishReport;
   }
 
   /**
@@ -369,6 +368,58 @@ class UpgradeReport {
    */
   public function setProblem($problem) {
     $this->problem = $problem;
+  }
+
+  public function get($field) {
+    $getter = 'get' . strtoupper($field{0}) . substr($field, 1);
+    return call_user_func([$this, $getter]);
+  }
+
+  public function set($field, $value) {
+    $setter = 'set' . strtoupper($field{0}) . substr($field, 1);
+    return call_user_func([$this, $setter], $value);
+  }
+
+  /**
+   * Update computed fields, stage and status.
+   */
+  public function updateComputedFields() {
+    $this->setStage($this->pickStage());
+    $this->setStatus($this->pickStatus());
+  }
+
+  public function pickStage() {
+    // started, downloading, extracting, upgrading, finished
+    if ($this->getProblem()) {
+      return 'failed';
+    }
+    if ($this->getFinished()) {
+      return 'finished';
+    }
+    if ($this->getUpgraded()) {
+      return 'finishing';
+    }
+    if ($this->getExtracted()) {
+      return 'upgrading';
+    }
+    if ($this->getDownloaded()) {
+      return 'extracting';
+    }
+    if ($this->getStarted()) {
+      return 'downloading';
+    }
+    return 'starting';
+  }
+
+  public function pickStatus() {
+    $stage = $this->pickStage();
+    switch ($stage) {
+      case 'failed':
+      case 'finished':
+        return $stage;
+      default:
+        return 'running';
+    }
   }
 
 }
