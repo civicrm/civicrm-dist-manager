@@ -13,36 +13,36 @@ use CiviUpgradeManagerBundle\Entity\UpgradeReport;
  *
  * @Route("/UpgradeReport")
  */
-class UpgradeReportController extends Controller
-{
-    /**
-     * Lists all UpgradeReport entities.
-     *
-     * @Route("/", name="UpgradeReport_index")
-     * @Method("GET")
-     */
-    public function indexAction()
-    {
-        $em = $this->getDoctrine()->getManager();
+class UpgradeReportController extends Controller {
 
-        $upgradeReports = $em->getRepository('CiviUpgradeManagerBundle:UpgradeReport')->findAll();
+  /**
+   * Lists all UpgradeReport entities.
+   *
+   * @Route("/", name="UpgradeReport_index")
+   * @Method("GET")
+   */
+  public function indexAction() {
+    $em = $this->getDoctrine()->getManager();
 
-        return $this->render('upgradereport/index.html.twig', array(
-            'upgradeReports' => $upgradeReports,
-        ));
-    }
+    $upgradeReports = $em->getRepository('CiviUpgradeManagerBundle:UpgradeReport')
+      ->findAll();
 
-    /**
-     * Finds and displays a UpgradeReport entity.
-     *
-     * @Route("/{id}", name="UpgradeReport_show")
-     * @Method("GET")
-     */
-    public function showAction(UpgradeReport $upgradeReport)
-    {
+    return $this->render('upgradereport/index.html.twig', array(
+      'upgradeReports' => $upgradeReports,
+    ));
+  }
 
-        return $this->render('upgradereport/show.html.twig', array(
-            'upgradeReport' => $upgradeReport,
-        ));
-    }
+  /**
+   * Finds and displays a UpgradeReport entity.
+   *
+   * @Route("/{id}", name="UpgradeReport_show")
+   * @Method("GET")
+   */
+  public function showAction(UpgradeReport $upgradeReport) {
+
+    return $this->render('upgradereport/show.html.twig', array(
+      'upgradeReport' => $upgradeReport,
+    ));
+  }
+
 }
