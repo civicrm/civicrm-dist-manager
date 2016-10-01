@@ -7,7 +7,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Siteid</th>
+                {#<th>Site ID</th>#}
                 <th>Revision</th>
                 <th>Reporter</th>
                 <th>Download URL</th>
@@ -30,7 +30,7 @@
         {% for upgradeReport in upgradeReports %}
             <tr>
                 <td><a href="{{ path('UpgradeReport_show', { 'id': upgradeReport.name }) }}">{{ upgradeReport.name }}</a></td>
-                <td>{{ upgradeReport.siteId }}</td>
+                {#<td>{{ upgradeReport.siteId }}</td>#}
                 <td>{{ upgradeReport.revision }}</td>
                 <td>{{ upgradeReport.reporter }}</td>
                 <td>{{ upgradeReport.downloadurl }}</td>
