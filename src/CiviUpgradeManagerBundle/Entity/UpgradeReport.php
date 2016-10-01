@@ -133,6 +133,243 @@ class UpgradeReport
      */
     private $problem;
 
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * @param string $name
+   */
+  public function setName($name) {
+    $this->name = $name;
+  }
+
+  /**
+   * @return string
+   */
+  public function getSiteId() {
+    return $this->siteId;
+  }
+
+  /**
+   * @param string $siteId
+   */
+  public function setSiteId($siteId) {
+    $this->siteId = $siteId;
+  }
+
+  /**
+   * @return string
+   */
+  public function getRevision() {
+    return $this->revision;
+  }
+
+  /**
+   * @param string $revision
+   */
+  public function setRevision($revision) {
+    $this->revision = $revision;
+  }
+
+  /**
+   * @return string
+   */
+  public function getReporter() {
+    return $this->reporter;
+  }
+
+  /**
+   * @param string $reporter
+   */
+  public function setReporter($reporter) {
+    $this->reporter = $reporter;
+  }
+
+  /**
+   * @return string
+   */
+  public function getDownloadurl() {
+    return $this->downloadurl;
+  }
+
+  /**
+   * @param string $downloadurl
+   */
+  public function setDownloadurl($downloadurl) {
+    $this->downloadurl = $downloadurl;
+  }
+
+  /**
+   * @return string
+   */
+  public function getStatus() {
+    return $this->status;
+  }
+
+  /**
+   * @param string $status
+   */
+  public function setStatus($status) {
+    $this->status = $status;
+  }
+
+  /**
+   * @return string
+   */
+  public function getStage() {
+    return $this->stage;
+  }
+
+  /**
+   * @param string $stage
+   */
+  public function setStage($stage) {
+    $this->stage = $stage;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getStarted() {
+    return $this->started;
+  }
+
+  /**
+   * @param \DateTime $started
+   */
+  public function setStarted($started) {
+    $this->started = $started;
+  }
+
+  /**
+   * @return string
+   */
+  public function getStartreport() {
+    return $this->startreport;
+  }
+
+  /**
+   * @param string $startreport
+   */
+  public function setStartreport($startreport) {
+    $this->startreport = $startreport;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getDownloaded() {
+    return $this->downloaded;
+  }
+
+  /**
+   * @param \DateTime $downloaded
+   */
+  public function setDownloaded($downloaded) {
+    $this->downloaded = $downloaded;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getExtracted() {
+    return $this->extracted;
+  }
+
+  /**
+   * @param \DateTime $extracted
+   */
+  public function setExtracted($extracted) {
+    $this->extracted = $extracted;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getUpgraded() {
+    return $this->upgraded;
+  }
+
+  /**
+   * @param \DateTime $upgraded
+   */
+  public function setUpgraded($upgraded) {
+    $this->upgraded = $upgraded;
+  }
+
+  /**
+   * @return string
+   */
+  public function getUpgradereport() {
+    return $this->upgradereport;
+  }
+
+  /**
+   * @param string $upgradereport
+   */
+  public function setUpgradereport($upgradereport) {
+    $this->upgradereport = $upgradereport;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getFinished() {
+    return $this->finished;
+  }
+
+  /**
+   * @param \DateTime $finished
+   */
+  public function setFinished($finished) {
+    $this->finished = $finished;
+  }
+
+  /**
+   * @return string
+   */
+  public function getFinishreport() {
+    return $this->finishreport;
+  }
+
+  /**
+   * @param string $finishreport
+   */
+  public function setFinishreport($finishreport) {
+    $this->finishreport = $finishreport;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getFailed() {
+    return $this->failed;
+  }
+
+  /**
+   * @param \DateTime $failed
+   */
+  public function setFailed($failed) {
+    $this->failed = $failed;
+  }
+
+  /**
+   * @return string
+   */
+  public function getProblem() {
+    return $this->problem;
+  }
+
+  /**
+   * @param string $problem
+   */
+  public function setProblem($problem) {
+    $this->problem = $problem;
+  }
 
 }
 
