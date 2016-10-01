@@ -10,17 +10,17 @@
                 <th>Siteid</th>
                 <th>Revision</th>
                 <th>Reporter</th>
-                <th>Downloadurl</th>
+                <th>Download URL</th>
                 <th>Status</th>
                 <th>Stage</th>
                 <th>Started</th>
-                <th>Startreport</th>
+                {#<th>Start Report</th>#}
                 <th>Downloaded</th>
                 <th>Extracted</th>
                 <th>Upgraded</th>
-                <th>Upgradereport</th>
+                {#<th>Upgrade Report</th>#}
                 <th>Finished</th>
-                <th>Finishreport</th>
+                {#<th>Finish Report</th>#}
                 <th>Failed</th>
                 <th>Problem</th>
                 <th>Actions</th>
@@ -37,13 +37,13 @@
                 <td>{{ upgradeReport.status }}</td>
                 <td>{{ upgradeReport.stage }}</td>
                 <td>{% if upgradeReport.started %}{{ upgradeReport.started|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{{ upgradeReport.startreport }}</td>
+                {#<td>{{ upgradeReport.startreport }}</td>#}
                 <td>{% if upgradeReport.downloaded %}{{ upgradeReport.downloaded|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{% if upgradeReport.extracted %}{{ upgradeReport.extracted|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{% if upgradeReport.upgraded %}{{ upgradeReport.upgraded|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{{ upgradeReport.upgradereport }}</td>
+                {#<td>{{ upgradeReport.upgradereport }}</td>#}
                 <td>{% if upgradeReport.finished %}{{ upgradeReport.finished|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{{ upgradeReport.finishreport }}</td>
+                {#<td>{{ upgradeReport.finishreport }}</td>#}
                 <td>{% if upgradeReport.failed %}{{ upgradeReport.failed|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{{ upgradeReport.problem }}</td>
                 <td>
