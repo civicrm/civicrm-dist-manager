@@ -1,0 +1,8 @@
+table.upgrade-report th, table.upgrade-report td {
+  text-align: left;
+  vertical-align: top;
+}
+table.upgrade-report th {
+  text-decoration: underline;
+}
+
