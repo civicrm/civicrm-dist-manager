@@ -3,21 +3,21 @@
 {% block body %}
     <h1>UpgradeReport list</h1>
 
-    <table>
+    <table class="upgrade-report">
         <thead>
             <tr>
+                <th>Revision</th>
                 <th>Name</th>
                 {#<th>Site ID</th>#}
-                <th>Revision</th>
-                <th>Reporter</th>
-                <th>Download URL</th>
-                <th>Status</th>
+                {#<th>Status</th>#}
                 <th>Stage</th>
+                {#<th>Reporter</th>#}
+                <th>Download URL</th>
                 <th>Started</th>
                 {#<th>Start Report</th>#}
-                <th>Downloaded</th>
-                <th>Extracted</th>
-                <th>Upgraded</th>
+                {#<th>Downloaded</th>#}
+                {#<th>Extracted</th>#}
+                {#<th>Upgraded</th>#}
                 {#<th>Upgrade Report</th>#}
                 <th>Finished</th>
                 {#<th>Finish Report</th>#}
@@ -29,18 +29,18 @@
         <tbody>
         {% for upgradeReport in upgradeReports %}
             <tr>
+                <td>{{ upgradeReport.revision }}</td>
                 <td><a href="{{ path('UpgradeReport_show', { 'id': upgradeReport.name }) }}">{{ upgradeReport.name }}</a></td>
                 {#<td>{{ upgradeReport.siteId }}</td>#}
-                <td>{{ upgradeReport.revision }}</td>
-                <td>{{ upgradeReport.reporter }}</td>
-                <td>{{ upgradeReport.downloadurl }}</td>
-                <td>{{ upgradeReport.status }}</td>
+                {#<td>{{ upgradeReport.status }}</td>#}
                 <td>{{ upgradeReport.stage }}</td>
+                {#<td>{{ upgradeReport.reporter }}</td>#}
+                <td>{{ upgradeReport.downloadurl }}</td>
                 <td>{% if upgradeReport.started %}{{ upgradeReport.started|date('Y-m-d H:i:s') }}{% endif %}</td>
                 {#<td>{{ upgradeReport.startreport }}</td>#}
-                <td>{% if upgradeReport.downloaded %}{{ upgradeReport.downloaded|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if upgradeReport.extracted %}{{ upgradeReport.extracted|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if upgradeReport.upgraded %}{{ upgradeReport.upgraded|date('Y-m-d H:i:s') }}{% endif %}</td>
+                {#<td>{% if upgradeReport.downloaded %}{{ upgradeReport.downloaded|date('Y-m-d H:i:s') }}{% endif %}</td>#}
+                {#<td>{% if upgradeReport.extracted %}{{ upgradeReport.extracted|date('Y-m-d H:i:s') }}{% endif %}</td>#}
+                {#<td>{% if upgradeReport.upgraded %}{{ upgradeReport.upgraded|date('Y-m-d H:i:s') }}{% endif %}</td>#}
                 {#<td>{{ upgradeReport.upgradereport }}</td>#}
                 <td>{% if upgradeReport.finished %}{{ upgradeReport.finished|date('Y-m-d H:i:s') }}{% endif %}</td>
                 {#<td>{{ upgradeReport.finishreport }}</td>#}

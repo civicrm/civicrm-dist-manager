@@ -1,14 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>UpgradeReport</h1>
+    <h1>Upgrade Report: {{ upgradeReport.name }}</h1>
 
-    <table>
+    <table class="upgrade-report">
         <tbody>
-            <tr>
-                <th>Name</th>
-                <td>{{ upgradeReport.name }}</td>
-            </tr>
             {#<tr>#}
                 {#<th>Siteid</th>#}
                 {#<td>{{ upgradeReport.siteId }}</td>#}
@@ -35,11 +31,13 @@
             </tr>
             <tr>
                 <th>Started</th>
-                <td>{% if upgradeReport.started %}{{ upgradeReport.started|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Start Report</th>
-                <td>{{ upgradeReport.startreport }}</td>
+                <td>
+                    <div>
+                        {% if upgradeReport.started %}{{ upgradeReport.started|date('Y-m-d H:i:s') }}{% endif %}
+                    </div>
+
+                    {{ upgradeReport.startreport }}
+                </td>
             </tr>
             <tr>
                 <th>Downloaded</th>
@@ -51,27 +49,30 @@
             </tr>
             <tr>
                 <th>Upgraded</th>
-                <td>{% if upgradeReport.upgraded %}{{ upgradeReport.upgraded|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Upgrade Report</th>
-                <td>{{ upgradeReport.upgradereport }}</td>
+                <td>
+                    <div>
+                        {% if upgradeReport.upgraded %}{{ upgradeReport.upgraded|date('Y-m-d H:i:s') }}{% endif %}
+                    </div>
+                    <pre>{{ upgradeReport.upgradereport }}</pre>
+                </td>
             </tr>
             <tr>
                 <th>Finished</th>
-                <td>{% if upgradeReport.finished %}{{ upgradeReport.finished|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Finish Report</th>
-                <td>{{ upgradeReport.finishreport }}</td>
+                <td>
+                    <div>
+                        {% if upgradeReport.finished %}{{ upgradeReport.finished|date('Y-m-d H:i:s') }}{% endif %}
+                    </div>
+                    <pre>{{ upgradeReport.finishreport }}</pre>
+                </td>
             </tr>
             <tr>
                 <th>Failed</th>
-                <td>{% if upgradeReport.failed %}{{ upgradeReport.failed|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Problem</th>
-                <td>{{ upgradeReport.problem }}</td>
+                <td>
+                    <div>
+                        {% if upgradeReport.failed %}{{ upgradeReport.failed|date('Y-m-d H:i:s') }}{% endif %}
+                    </div>
+                    <pre>{{ upgradeReport.problem }}</pre>
+                </td>
             </tr>
         </tbody>
     </table>
