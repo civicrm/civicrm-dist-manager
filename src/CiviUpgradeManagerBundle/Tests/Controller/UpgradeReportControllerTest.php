@@ -15,6 +15,9 @@ class UpgradeReportControllerTest extends WebTestCase {
     $em->getConnection()->executeQuery('DELETE FROM UpgradeReport WHERE siteId LIKE "UpgradeReport%"');
   }
 
+  /**
+   * If a required field is omitted, return an error.
+   */
   public function testRequired() {
     // Create a new client to browse the application
     $client = static::createClient();
@@ -34,6 +37,9 @@ class UpgradeReportControllerTest extends WebTestCase {
     $this->assertEquals('Missing required argument: name', $json['message']);
   }
 
+  /**
+   * Correctly create an UpgradeReport and view it.
+   */
   public function testCompleteScenario() {
     // Create a new client to browse the application
     $client = static::createClient();
@@ -65,7 +71,10 @@ class UpgradeReportControllerTest extends WebTestCase {
     $this->assertContains('2001-02-03', $crawler->text());
   }
 
-  public function testUpdateProperty() {
+  /**
+   * Create a record; then fill in an empty property later.
+   */
+  public function testFillProperty() {
     // Create a new client to browse the application
     $client = static::createClient();
     $siteId = 'UpgradeReportControllerTest';
@@ -101,7 +110,10 @@ class UpgradeReportControllerTest extends WebTestCase {
     $this->assertEquals('finished', $upgradeReport->getStage());
   }
 
-
+  /**
+   * Attempt to update an existing record -- but this should fail if the
+   * update uses the wrong siteId.
+   */
   public function testWrongSiteId() {
     // Create a new client to browse the application
     $client = static::createClient();
@@ -136,6 +148,44 @@ class UpgradeReportControllerTest extends WebTestCase {
     $this->assertEquals(strtotime('2001-03-03 12:00'), $upgradeReport->getStarted()->getTimestamp());
     $this->assertEquals(NULL, $upgradeReport->getFinished());
   }
+
+  /**
+   * Create a record; then fill in an empty property later.
+   */
+  public function testChangeProhibited() {
+    // Create a new client to browse the application
+    $client = static::createClient();
+    $siteId = 'UpgradeReportControllerTest';
+    $name = md5(rand() . rand() . rand() . uniqid() . time());
+
+    $client->request('POST', '/report', array(
+      'siteId' => $siteId,
+      'name' => $name,
+      'revision' => '1.0.2',
+      'started' => strtotime('2001-03-03 12:00'),
+    ));
+    $json = $this->checkJsonResponse($client->getResponse(), 200);
+    $this->assertEquals('Saved', $json['message']);
+
+    /** @var UpgradeReport $upgradeReport */
+    $em = $this->createEntityManager();
+    $upgradeReport = $em->find(UpgradeReport::class, $name);
+    $this->assertEquals(strtotime('2001-03-03 12:00'), $upgradeReport->getStarted()->getTimestamp());
+    $this->assertEquals(NULL, $upgradeReport->getFinished());
+    $this->assertEquals('downloading', $upgradeReport->getStage());
+
+    $client->request('POST', '/report', array(
+      'siteId' => $siteId,
+      'name' => $name,
+      'started' => strtotime('2001-03-05 12:00'),
+    ));
+    $json = $this->checkJsonResponse($client->getResponse(), 400);
+    $this->assertEquals('Field "started" has already been set', $json['message']);
+
+    $em->refresh($upgradeReport);
+    $this->assertEquals(strtotime('2001-03-03 12:00'), $upgradeReport->getStarted()->getTimestamp());
+  }
+
 
   protected function checkJsonResponse(Response $response, $expectCode) {
     $this->assertEquals('application/json',

@@ -72,7 +72,7 @@ class UpgradeReportController extends Controller {
       }
 
       if ($upgradeReport->get($field)) {
-        return $this->createJson(array('message' => "Field $field has already been set"), 400); // FIXME: Status code
+        return $this->createJson(array('message' => "Field \"$field\" has already been set"), 400); // FIXME: Status code
       }
       else {
         switch ($type) {
