@@ -8,6 +8,7 @@ A Symfony project created on September 26, 2016, 9:26 am.
 git clone https://github.com/civicrm/civicrm-upgrade-manager
 cd civicrm-upgrade-manager
 composer install
+php bin/console doctrine:schema:create
 php bin/console server:run
 ```
 
