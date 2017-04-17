@@ -69,6 +69,7 @@ GET ($check['tar']['Drupal'])
 ## Report: The download completed
 POST http://localhost/report
   name => $name
+  siteId => $site_id
   downloaded => time()
 
 ## Put the code into your build
@@ -77,6 +78,7 @@ tar xvzf civicrm-X.Y.Z.tar.gz
 ## Report: The extract completed
 POST http://localhost/report
   name => $name
+  siteId => $site_id
   extracted => time()
 
 ## Upgrade the DB schema
@@ -86,12 +88,14 @@ $messages = $upgrade->run()
 ## Report: The DB schema upgrade completed
 POST http://localhost/report
   name => $name
+  siteId => $site_id
   upgraded => time()
   upgradeReport => $messages
 
 ## Report: The upgrade finished
 POST http://localhost/report
   name => $name
+  siteId => $site_id
   finished => time()
   finishReport => civicrm_api3('System', 'get')
 ```
@@ -101,6 +105,7 @@ If at any point there is an error, then report that:
 ```
 POST http://localhost/report
   name => $name
+  siteId => $site_id
   failed => time()
   problem => $message
 ```
