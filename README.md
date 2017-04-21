@@ -9,6 +9,21 @@ git clone https://github.com/civicrm/civicrm-upgrade-manager
 cd civicrm-upgrade-manager
 composer install
 php bin/console doctrine:schema:create
+```
+
+Next, you'll need credentials for scanning data in the Google Cloud Storage
+system. For example:
+ * Login to https://console.cloud.google.com/iam-admin/projects
+ * Select "Project => CiviCRM"
+ * Select "Service Accounts"
+ * Click "Create a Service Account"
+   * The account does not need any special permissions. It just needs read-access to public resources.
+   * You'll want to create key (JSON).
+ * Copy the JSON file to `app/config/gcloud.json`
+
+Finally, start the web server, e.g.
+
+```
 php bin/console server:run
 ```
 
