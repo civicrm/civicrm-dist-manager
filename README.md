@@ -42,20 +42,20 @@ For example:
    for the most recent release-candidate. (Alternatively, if the RC has been
    superceded by the final/stable release, then it will return that.)
 
-### Route: `GET /download`
+### Route: `GET /latest`
 
 Display a web page listing the (synthetic) download links.
 
-### Route: `GET /download/civicrm-{stability}-{cms}.{ext}`
+### Route: `GET /latest/civicrm-{stability}-{cms}.{ext}`
 
 Use this end-point to download the latest stable, rc, or nightly archive.
 
 For example:
 
- * `http://localhost/download/civicrm-NIGHTLY-drupal6.tar.gz`
- * `http://localhost/download/civicrm-STABLE-drupal.tar.gz`
- * `http://localhost/download/civicrm-STABLE-wordpress.zip`
- * `http://localhost/download/civicrm-RC-joomla.zip`
+ * `http://localhost/latest/civicrm-NIGHTLY-drupal6.tar.gz`
+ * `http://localhost/latest/civicrm-STABLE-drupal.tar.gz`
+ * `http://localhost/latest/civicrm-STABLE-wordpress.zip`
+ * `http://localhost/latest/civicrm-RC-joomla.zip`
 
 
 ### Route: `POST /report`

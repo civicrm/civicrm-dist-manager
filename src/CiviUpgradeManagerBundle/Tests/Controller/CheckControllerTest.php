@@ -8,7 +8,7 @@ class CheckControllerTest extends WebTestCase {
 
   public function testDownloadList() {
     $client = static::createClient();
-    $client->request('GET', '/download', array());
+    $client->request('GET', '/latest', array());
     $this->assertRegex(';\<a href="[^"]*civicrm-NIGHTLY-drupal.tar.gz"\>;',
       $client->getResponse()->getContent());
   }
@@ -20,7 +20,7 @@ class CheckControllerTest extends WebTestCase {
    */
   public function testDownload($file, $regex) {
     $client = static::createClient();
-    $client->request('GET', "/download/$file");
+    $client->request('GET', "/latest/$file");
     $this->assertRegex(';^https://storage.googleapis.com/civicrm;', $client->getResponse()->headers->get('Location'));
     $this->assertRegex($regex, $client->getResponse()->headers->get('Location'));
   }

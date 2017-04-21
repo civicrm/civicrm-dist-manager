@@ -69,7 +69,7 @@ class CheckController extends Controller {
   /**
    * Get the download for the stable, rc, or nightly tarball.
    *
-   * Ex: "GET /download/civicrm-NIGHTLY-joomla.zip".
+   * Ex: "GET /latest/civicrm-NIGHTLY-joomla.zip".
 
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
