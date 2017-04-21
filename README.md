@@ -1,7 +1,7 @@
-# civicrm-upgrade-manager
+# civicrm-dist-manager
 
-This application manages redirect and reporting infrastructure for CiviCRM
-downloads.
+This application manages the `civicrm.org` distribution/download frontend
+service, including redirects and reporting.
 
 ### Setup: Baseline
 

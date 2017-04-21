@@ -1,10 +1,10 @@
 <?php
 
-namespace CiviUpgradeManagerBundle;
+namespace CiviDistManagerBundle;
 
 /**
  * Class BuildRepository
- * @package CiviUpgradeManagerBundle
+ * @package CiviDistManagerBundle
  *
  * The BuildRepository keeps a list of all available builds.
  */

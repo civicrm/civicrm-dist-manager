@@ -1,12 +1,12 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Controller;
+namespace CiviDistManagerBundle\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use CiviUpgradeManagerBundle\Entity\UpgradeReport;
+use CiviDistManagerBundle\Entity\UpgradeReport;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,7 +33,7 @@ class UpgradeReportController extends Controller {
     }
 
     /** @var UpgradeReport $upgradeReport */
-    $upgradeReport = $em->getRepository('CiviUpgradeManagerBundle:UpgradeReport')
+    $upgradeReport = $em->getRepository('CiviDistManagerBundle:UpgradeReport')
       ->find($request->get('name'));
 
     if ($upgradeReport && $upgradeReport->getSiteId() !== $request->get('siteId')) {
@@ -106,7 +106,7 @@ class UpgradeReportController extends Controller {
   public function indexAction() {
     $em = $this->getDoctrine()->getManager();
 
-    $upgradeReports = $em->getRepository('CiviUpgradeManagerBundle:UpgradeReport')
+    $upgradeReports = $em->getRepository('CiviDistManagerBundle:UpgradeReport')
         ->findBy([], ['started' => 'DESC']);
 
     return $this->render('upgradereport/index.html.twig', array(

@@ -1,0 +1,12 @@
+
+check:
+    path:     /check
+    defaults: { _controller: CiviDistManagerBundle:Check:check }
+
+download:
+    path:     /latest
+    defaults: { _controller: CiviDistManagerBundle:Check:downloadList }
+
+download_file:
+    path:     /latest/{file}
+    defaults: { _controller: CiviDistManagerBundle:Check:download }

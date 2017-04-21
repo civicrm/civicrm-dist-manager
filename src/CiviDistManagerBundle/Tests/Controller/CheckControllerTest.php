@@ -1,6 +1,6 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Tests\Controller;
+namespace CiviDistManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

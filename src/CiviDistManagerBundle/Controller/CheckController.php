@@ -1,10 +1,10 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Controller;
+namespace CiviDistManagerBundle\Controller;
 
-use CiviUpgradeManagerBundle\BuildRepository;
-use CiviUpgradeManagerBundle\CmsMap;
-use CiviUpgradeManagerBundle\VersionUtil;
+use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\CmsMap;
+use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,7 +61,7 @@ class CheckController extends Controller {
       }
     }
 
-    return $this->render('CiviUpgradeManagerBundle:Check:downloadList.html.twig', array(
+    return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
       'logicalFiles' => $logicalFiles,
     ));
   }

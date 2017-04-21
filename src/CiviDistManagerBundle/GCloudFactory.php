@@ -1,6 +1,6 @@
 <?php
 
-namespace CiviUpgradeManagerBundle;
+namespace CiviDistManagerBundle;
 
 use Google\Cloud\Storage\StorageClient;
 

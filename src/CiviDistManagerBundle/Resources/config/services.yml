@@ -5,22 +5,22 @@ parameters:
 
 services:
 #    civi_upgrade_manager.example:
-#        class: CiviUpgradeManagerBundle\Example
+#        class: CiviDistManagerBundle\Example
 #        arguments: ["@service_id", "plain_value", %parameter%]
   civi_upgrade_manager.dist_cache:
     class: 'Doctrine\Common\Cache\FilesystemCache'
     arguments: ['%kernel.cache_dir%/dist']
 
   build_repository:
-    class: CiviUpgradeManagerBundle\BuildRepository
+    class: CiviDistManagerBundle\BuildRepository
     arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache' ]
 
   gcloud_storage:
     class: Google\Cloud\Storage\StorageClient
-    factory: ['CiviUpgradeManagerBundle\GCloudFactory', createStorageClient]
+    factory: ['CiviDistManagerBundle\GCloudFactory', createStorageClient]
     arguments: ['%gcloud_cred%', '%gcloud_project%']
 
   gcloud_bucket:
     class: Google\Cloud\Storage\Bucket
-    factory: ['CiviUpgradeManagerBundle\GCloudFactory', createBucket]
+    factory: ['CiviDistManagerBundle\GCloudFactory', createBucket]
     arguments: ['@gcloud_storage', '%gcloud_bucket%']

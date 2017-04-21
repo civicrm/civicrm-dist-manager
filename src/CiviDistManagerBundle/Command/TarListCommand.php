@@ -1,8 +1,8 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Command;
+namespace CiviDistManagerBundle\Command;
 
-use CiviUpgradeManagerBundle\BuildRepository;
+use CiviDistManagerBundle\BuildRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

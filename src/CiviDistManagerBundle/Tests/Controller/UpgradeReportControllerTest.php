@@ -1,8 +1,8 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Tests\Controller;
+namespace CiviDistManagerBundle\Tests\Controller;
 
-use CiviUpgradeManagerBundle\Entity\UpgradeReport;
+use CiviDistManagerBundle\Entity\UpgradeReport;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;

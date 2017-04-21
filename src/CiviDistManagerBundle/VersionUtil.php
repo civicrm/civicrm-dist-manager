@@ -1,5 +1,5 @@
 <?php
-namespace CiviUpgradeManagerBundle;
+namespace CiviDistManagerBundle;
 
 class VersionUtil {
 

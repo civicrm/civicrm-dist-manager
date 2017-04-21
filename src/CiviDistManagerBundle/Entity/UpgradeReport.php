@@ -1,6 +1,6 @@
 <?php
 
-namespace CiviUpgradeManagerBundle\Entity;
+namespace CiviDistManagerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

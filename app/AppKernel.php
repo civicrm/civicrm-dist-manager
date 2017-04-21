@@ -16,7 +16,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new AppBundle\AppBundle(),
-            new CiviUpgradeManagerBundle\CiviUpgradeManagerBundle(),
+            new CiviDistManagerBundle\CiviDistManagerBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
@@ -31,7 +31,7 @@ class AppKernel extends Kernel
 
     public function handle(\Symfony\Component\HttpFoundation\Request $request, $type = \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $catch = TRUE) {
         // FIXME: There must be a better way.
-        $response = \CiviUpgradeManagerBundle\LegacyRedirect::onHandle($request);
+        $response = \CiviDistManagerBundle\LegacyRedirect::onHandle($request);
         if ($response) {
             return $response;
         }
