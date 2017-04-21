@@ -41,21 +41,6 @@ This route works a bit different from normal Symfony routing -- the file
 
 > This could probably be done in a better way.
 
-### Route: `GET /check`
-
-Use this end-point to locate the latest upgrade. The route accepts
-one mandatory parameter, `stability` (`nightly`, `rc`, or `stable`).
-
-For example:
-
- * `http://localhost/check?stability=nightly` will return a list of tarballs
-   produced for the `master` branch. These are not intended for production use.
- * `http://localhost/check?stability=stable` will return a list of tarballs
-   for the most recent release. Thse are intended for production use.
- * `http://localhost/check?stability=rc` will return a list of tarballs
-   for the most recent release-candidate. (Alternatively, if the RC has been
-   superceded by the final/stable release, then it will return that.)
-
 ### Route: `GET /latest`
 
 Display a web page listing the (synthetic) download links.
@@ -71,8 +56,22 @@ For example:
  * `http://localhost/latest/civicrm-STABLE-wordpress.zip`
  * `http://localhost/latest/civicrm-RC-joomla.zip`
 
+### Route: `GET /check` (Web service)
 
-### Route: `POST /report`
+Use this end-point to check for metadata about an upgrade
+based on a desired `stability` level (`nightly`, `rc`, or `stable`).
+
+For example:
+
+ * `http://localhost/check?stability=nightly` will return a list of tarballs
+   produced for the `master` branch. These are not intended for production use.
+ * `http://localhost/check?stability=stable` will return a list of tarballs
+   for the most recent release. Thse are intended for production use.
+ * `http://localhost/check?stability=rc` will return a list of tarballs
+   for the most recent release-candidate. (Alternatively, if the RC has been
+   superceded by the final/stable release, then it will return that.)
+
+### Route: `POST /report` (Web service)
 
 Use this end-point report about the upgrade. Generally, the intent is to
 report about each step of the upgrade as it happens. The basic rules of
@@ -86,7 +85,7 @@ this end-point are:
  * All other fields can be submitted once.
  * Once written, fields are immutable.
 
-### Putting it together (pseudocode)
+### Use Case: Performing an automated upgrade (pseudocode)
 
 ```
 ## Find or create an ID for this site
