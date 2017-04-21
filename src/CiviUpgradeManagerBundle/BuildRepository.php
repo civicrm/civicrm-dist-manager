@@ -134,17 +134,10 @@ class BuildRepository {
    */
   private function parseFileRecord($file) {
     if (preg_match(';^([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)-(\d+)\.(tar.gz|zip|tgz)$;', $file, $matches)) {
-      $tarName = array(
-        'backdrop' => 'Backdrop',
-        'drupal' => 'Drupal',
-        'drupal6' => 'Drupal6',
-        'wordpress' => 'WordPress',
-        'joomla' => 'Joomla',
-        'l10n' => 'L10n',
-      );
+      $cmsMap = CmsMap::getMap();
       list ($full, $branch, $version, $ign, $cmsFile, $ts, $ext) = $matches;
       $tsEpoch = $this->parseTimestamp($ts);
-      if (!isset($tarName[$cmsFile])) {
+      if (!isset($cmsMap[$cmsFile])) {
         return NULL;
       }
       else {
@@ -154,7 +147,7 @@ class BuildRepository {
           'branch' => $branch,
           'version' => $version,
           'rev' => "$version-$ts",
-          'uf' => $tarName[$cmsFile],
+          'uf' => $cmsMap[$cmsFile],
           'timestamp' => $tsEpoch,
         );
       }
