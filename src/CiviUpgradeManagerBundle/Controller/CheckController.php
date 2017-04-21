@@ -2,6 +2,8 @@
 
 namespace CiviUpgradeManagerBundle\Controller;
 
+use CiviUpgradeManagerBundle\BuildRepository;
+use CiviUpgradeManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -38,8 +40,7 @@ class CheckController extends Controller {
             'message' => 'Missing required argument: stability=(nightly|rc|stable)',
           ), 404);
       }
-    }
-    catch (\RuntimeException $e) {
+    } catch (\RuntimeException $e) {
       /** @var Logger $logger */
       $logger = $this->get('logger');
       $logger->error('Failed to check on available tarballs', array(
@@ -83,16 +84,12 @@ class CheckController extends Controller {
    *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestRc() {
-    // Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
-    $nightlies = $this->fetchJson(self::NIGHTLY_SUMMARY_URL);
-    $latestRc = $this->findLatestRc($nightlies);
-
-    if (isset($nightlies[$latestRc])) {
-      return $nightlies[$latestRc];
-    }
-    else {
-      return NULL;
-    }
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+    $targetBranch = VersionUtil::max($buildRepo->getOptions('branch', function ($file) {
+      return (bool) preg_match(';^[0-9\.]+-rc$;', $file['branch']);
+    }));
+    return $this->getLatestRevByBranch($targetBranch);
   }
 
   /**
@@ -100,19 +97,16 @@ class CheckController extends Controller {
    *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestNightly() {
-    // Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
-    $nightlies = $this->fetchJson(self::NIGHTLY_SUMMARY_URL);
-    if (isset($nightlies['master'])) {
-      return $nightlies['master'];
-    }
-    else {
-      throw new \RuntimeException('Failed to locate master build in ' . self::NIGHTLY_SUMMARY_URL);
-    }
+    return $this->getLatestRevByBranch('master');
   }
 
   /**
-   * @param $data
-   * @param $status
+   * Create a Response object of json data.
+   *
+   * @param array $data
+   *   Data to return in the response. (It will be serialized.)
+   * @param int $status
+   *   HTTP response code. Ex: 200, 404.
    * @return \Symfony\Component\HttpFoundation\Response
    */
   protected function createJson($data, $status) {
@@ -122,8 +116,8 @@ class CheckController extends Controller {
   }
 
   /**
-   * @return array
    *
+   * @return array
    */
   protected function fetchJson($url) {
     /** @var Cache $cache */
@@ -138,24 +132,6 @@ class CheckController extends Controller {
       }
     }
     return json_decode($cache->fetch($url), 1);
-  }
-
-  /**
-   * @param array $nightlies
-   *   Ex: $nightlies['4.7.12-rc']['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
-   * @return int|string
-   */
-  protected function findLatestRc($nightlies) {
-    $latestRc = 0;
-    foreach ($nightlies as $name => $nightly) {
-      if (!preg_match(';-rc$;', $name)) {
-        continue;
-      }
-      if (version_compare($name, $latestRc, '>')) {
-        $latestRc = $name;
-      }
-    }
-    return $latestRc;
   }
 
   /**
@@ -192,6 +168,48 @@ class CheckController extends Controller {
         'civicrm-wordpress' => array('commit' => $rev),
       ),
     );
+  }
+
+  /**
+   * Find all the latest revision (within a branch) and list out the
+   * various files/metadata.
+   *
+   * @param string $targetBranch
+   * @return array
+   */
+  protected function getLatestRevByBranch($targetBranch) {
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+
+    $targetRev = VersionUtil::max($buildRepo->getOptions('rev', function ($file) use ($targetBranch) {
+      return $file['branch'] === $targetBranch;
+    }));
+
+    list ($targetTimestamp) = $buildRepo->getOptions('timestamp', function ($file) use ($targetBranch, $targetRev) {
+      return $file['branch'] === $targetBranch && $file['rev'] == $targetRev;
+    });
+
+    list ($targetVersion) = $buildRepo->getOptions('version', function ($file) use ($targetBranch, $targetRev) {
+      return $file['branch'] === $targetBranch && $file['rev'] == $targetRev;
+    });
+
+    $def = array(
+      'version' => $targetVersion,
+      'rev' => $targetRev,
+      'tar' => array(),
+      'timestamp' => array(
+        'epoch' => $targetTimestamp,
+        'pretty' => date('r', $targetTimestamp),
+      )
+    );
+
+    foreach ($buildRepo->getFiles() as $file) {
+      if ($file['branch'] === $targetBranch && $file['rev'] === $targetRev) {
+        $def['tar'][$file['uf']] = $file['url'];
+      }
+    }
+
+    return $def;
   }
 
 }
