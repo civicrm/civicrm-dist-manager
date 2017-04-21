@@ -5,9 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="alert alert-info cxn-jumbo" role="alert">
-        {% trans %}Latest Autobuilds{% endtrans %}
-    </div>
+    <h1>Autobuilds: About</h1>
 
     <p>This page lists the latest autobuild tarballs. The autobuild tarballs are provided <strong>for testing purposes</strong>. Important notes:</p>
 
@@ -30,15 +28,9 @@
         <li>When using these tarballs, please install a clean site <strong>or</strong> upgrade a (copied) dataset from a
             stable release.
         </li>
-
-        <li>If the code has not changed since the previous day, then the previous tarballs
-            will be reused.
-        </li>
-        <li>An archive of past tarballs is maintained for two weeks.</li>
-        <li>Each filename includes a date (YYYYMMDD) to indicate the true date of generation.</li>
     </ul>
 
-
+    <h1>Autobuilds: List</h1>
 
     <ul>
         {% for file, url in logicalFiles %}
