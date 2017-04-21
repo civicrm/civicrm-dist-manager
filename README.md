@@ -37,7 +37,7 @@ required for local development of the PHP logic.
 ### Route: `GET /civicrm-{version}-{cms}.{ext}` (legacy script)
 
 This route works a bit different from normal Symfony routing -- the file
-`app/LegacyRouter.php` is hardwired into the `app
+`app/LegacyRouter.php` is hardwired into the `AppKernel`.
 
 > This could probably be done in a better way.
 
