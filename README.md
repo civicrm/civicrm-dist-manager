@@ -1,6 +1,7 @@
 # civicrm-upgrade-manager
 
-A Symfony project created on September 26, 2016, 9:26 am.
+This application manages redirect and reporting infrastructure for CiviCRM
+downloads.
 
 ### Setup: Baseline
 
@@ -25,6 +26,12 @@ credentials for Google Cloud Storage system.
    * You'll want to create key (JSON).
  * Copy the JSON file to `app/config/gcloud.json`
 
+### Route: `GET /civicrm-{version}-{cms}.{ext}` (legacy script)
+
+This route works a bit different from normal Symfony routing -- the file
+`app/LegacyRouter.php` is hardwired into the `app
+
+> This could probably be done in a better way.
 
 ### Route: `GET /check`
 
