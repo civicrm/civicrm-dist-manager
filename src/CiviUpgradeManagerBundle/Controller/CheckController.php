@@ -171,12 +171,15 @@ class CheckController extends Controller {
    * @return array
    */
   protected function createBackfilledStableMetadata($rev) {
+    $backdropFile = version_compare('4.7.20', $rev, '<=')
+      ? 'backdrop-unstable' : 'backdrop';
+
     return array(
       'version' => $rev,
       'rev' => $rev,
       'tar' => array(
-        'Backdrop' => sprintf('%s/civicrm-%s-backdrop-unstable.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev),
+        'Backdrop' => sprintf('%s/civicrm-%s-%s.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $backdropFile, $rev),
         'Drupal' => sprintf('%s/civicrm-%s-drupal.tar.gz',
           self::STABLE_DOWNLOAD_URL, $rev),
         'Drupal6' => sprintf('%s/civicrm-%s-drupal6.tar.gz',

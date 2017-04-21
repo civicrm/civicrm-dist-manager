@@ -10,6 +10,7 @@ class CmsMap {
   public static function getMap() {
     return array(
       'backdrop' => 'Backdrop',
+      'backdrop-unstable' => 'Backdrop',
       'drupal' => 'Drupal',
       'drupal6' => 'Drupal6',
       'wordpress' => 'WordPress',
