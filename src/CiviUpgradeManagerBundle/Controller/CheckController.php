@@ -25,7 +25,7 @@ class CheckController extends Controller {
    */
   public function checkAction(Request $request) {
     try {
-      $revSpec = $this->findRevByStability($request->get('stability'));
+      $revSpec = $this->findRevByStability(strtolower($request->get('stability')));
       return $this->createJson($revSpec, $revSpec['rev'] === NULL ? 404 : 200);
     }
     catch (\RuntimeException $e) {
@@ -39,17 +39,18 @@ class CheckController extends Controller {
   /**
    * Get the download for the stable, rc, or nightly tarball.
    *
-   * Ex: "GET /download/civicrm-nightly-joomla.zip".
+   * Ex: "GET /download/civicrm-NIGHTLY-joomla.zip".
 
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
   public function downloadAction(Request $request) {
     try {
-      if (!preg_match(';^civicrm-(stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;', $request->get('file'), $matches)) {
+      if (!preg_match(';^civicrm-(stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $request->get('file'), $matches)) {
         return $this->createJsonError('File not found. File name appears malformed.', 404);
       }
-      list ($full, $stability, $cms) = $matches;
+      $stability = strtolower($matches[1]);
+      $cms = $matches[2];
 
       $revSpec = $this->findRevByStability($stability);
       if ($revSpec['rev'] === NULL) {

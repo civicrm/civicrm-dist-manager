@@ -17,7 +17,7 @@ class CheckControllerTest extends WebTestCase {
 
   public function testDownloadNightlyDrupal() {
     $client = static::createClient();
-    $client->request('GET', '/download/civicrm-nightly-drupal.tar.gz', array(
+    $client->request('GET', '/download/civicrm-NIGHTLY-drupal.tar.gz', array(
       'stability' => 'stable',
     ));
     $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',

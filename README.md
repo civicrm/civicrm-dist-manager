@@ -44,15 +44,14 @@ For example:
 
 ### Route: `GET /download/civicrm-{stability}-{cms}.{ext}`
 
-Use this end-point to locate the latest upgrade. The route accepts
-one mandatory parameter, `stability` (`nightly`, `rc`, or `stable`).
+Use this end-point to download the latest stable, rc, or nightly archive.
 
 For example:
 
- * `http://localhost/download/civicrm-nightly-drupal6.tar.gz`
- * `http://localhost/download/civicrm-stable-drupal.tar.gz`
- * `http://localhost/download/civicrm-stable-wordpress.zip`
- * `http://localhost/download/civicrm-rc-joomla.zip`
+ * `http://localhost/download/civicrm-NIGHTLY-drupal6.tar.gz`
+ * `http://localhost/download/civicrm-STABLE-drupal.tar.gz`
+ * `http://localhost/download/civicrm-STABLE-wordpress.zip`
+ * `http://localhost/download/civicrm-RC-joomla.zip`
 
 
 ### Route: `POST /report`
