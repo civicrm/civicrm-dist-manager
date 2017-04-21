@@ -53,12 +53,12 @@ class UpgradeReportController extends Controller {
     }
 
     $fields = array(
-      'reporter'=> 'basic',
-      'downloadUrl'=> 'basic',
-      'startReport'=> 'basic',
-      'upgradeReport'=> 'basic',
-      'finishReport'=> 'basic',
-      'problem'=> 'basic',
+      'reporter' => 'basic',
+      'downloadUrl' => 'basic',
+      'startReport' => 'basic',
+      'upgradeReport' => 'basic',
+      'finishReport' => 'basic',
+      'problem' => 'basic',
       'started' => 'ts',
       'downloaded' => 'ts',
       'extracted' => 'ts',
@@ -79,9 +79,11 @@ class UpgradeReportController extends Controller {
           case 'basic':
             $upgradeReport->set($field, $request->get($field));
             break;
+
           case 'ts':
             $upgradeReport->set($field, new \DateTime(date('r', $request->get($field))));
             break;
+
           default:
             throw new \RuntimeException("Unrecognized field type: $type");
         }

@@ -417,6 +417,7 @@ class UpgradeReport {
       case 'failed':
       case 'finished':
         return $stage;
+
       default:
         return 'running';
     }

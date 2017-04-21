@@ -50,7 +50,7 @@ class CheckController extends Controller {
       'drupal6.tar.gz',
       'joomla.zip',
       'wordpress.zip',
-      'l10n.tar.gz'
+      'l10n.tar.gz',
     );
     foreach (array('NIGHTLY', 'RC', 'STABLE') as $stability) {
       foreach ($suffixes as $suffix) {

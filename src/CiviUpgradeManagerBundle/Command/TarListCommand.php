@@ -21,8 +21,7 @@ Examples:
 $ bin/console tar:list
 $ bin/console tar:list master/*
 $ bin/console tar:list 4.6*/*drupal*
-')
-    ;
+');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
