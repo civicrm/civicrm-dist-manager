@@ -11,7 +11,7 @@ class CheckControllerTest extends WebTestCase {
     $client->request('GET', '/download/civicrm-stable-wordpress.zip', array(
       'stability' => 'stable',
     ));
-    $this->assertRegex(';^https://download.civicrm.org/civicrm-[\d\.]+-wordpress.zip;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;',
       $client->getResponse()->headers->get('Location'));
   }
 
@@ -76,11 +76,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://download.civicrm.org/civicrm-[\d\.]+-drupal.tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-drupal.tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://download.civicrm.org/civicrm-[\d\.]+-drupal6.tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-drupal6.tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://download.civicrm.org/civicrm-[\d\.]+-wordpress.zip;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;',
       $data['tar']['WordPress']);
   }
 

@@ -12,9 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckController extends Controller {
 
-  const STABLE_DOWNLOAD_URL = 'https://download.civicrm.org';
+  const STABLE_DOWNLOAD_URL = 'https://storage.googleapis.com/civicrm/civicrm-stable';
   const VERSIONS_URL = 'https://latest.civicrm.org/versions.json';
-  const NIGHTLY_SUMMARY_URL = 'https://dist.civicrm.org/by-date/latest/summary.json';
   const CACHE_TTL = 120;
 
   /**
