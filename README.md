@@ -26,6 +26,14 @@ credentials for Google Cloud Storage system.
    * You'll want to create key (JSON).
  * Copy the JSON file to `app/config/gcloud.json`
 
+### Setup: httpd redirects
+
+Some simple redirects are implemented at the httpd level.  See
+`nginx/site-example.conf` and `nginx/common.conf`.
+
+These are required for correctly providing service, but they are not
+required for local development of the PHP logic.
+
 ### Route: `GET /civicrm-{version}-{cms}.{ext}` (legacy script)
 
 This route works a bit different from normal Symfony routing -- the file
