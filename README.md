@@ -34,6 +34,14 @@ Some simple redirects are implemented at the httpd level.  See
 These are required for correctly providing service, but they are not
 required for local development of the PHP logic.
 
+### Test Suite
+
+The tests are implemented with PHPUnit. Simply go to the project root and run:
+
+```
+phpunit4
+```
+
 ### Route: `GET /civicrm-{version}-{cms}.{ext}` (Redirect)
 
 This allows you download a specific version of CiviCRM.
