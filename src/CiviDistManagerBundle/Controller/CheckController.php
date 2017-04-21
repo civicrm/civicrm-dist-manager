@@ -52,7 +52,7 @@ class CheckController extends Controller {
       'wordpress.zip',
       'l10n.tar.gz',
     );
-    foreach (array('NIGHTLY', 'RC', 'STABLE', '46NIGHTLY') as $stability) {
+    foreach (array('STABLE', 'RC', 'NIGHTLY', '46NIGHTLY') as $stability) {
       foreach ($suffixes as $suffix) {
         $basename = "civicrm-$stability-$suffix";
         $logicalFiles[$basename] = $this->generateUrl('download_file', array(
