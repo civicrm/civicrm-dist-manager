@@ -6,6 +6,24 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CheckControllerTest extends WebTestCase {
 
+  public function testDownloadStableWordPress() {
+    $client = static::createClient();
+    $client->request('GET', '/download/civicrm-stable-wordpress.zip', array(
+      'stability' => 'stable',
+    ));
+    $this->assertRegex(';^https://download.civicrm.org/civicrm-[\d\.]+-wordpress.zip;',
+      $client->getResponse()->headers->get('Location'));
+  }
+
+  public function testDownloadNightlyDrupal() {
+    $client = static::createClient();
+    $client->request('GET', '/download/civicrm-nightly-drupal.tar.gz', array(
+      'stability' => 'stable',
+    ));
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
+      $client->getResponse()->headers->get('Location'));
+  }
+
   public function testCheckRc() {
     $client = static::createClient();
 

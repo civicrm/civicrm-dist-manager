@@ -3,9 +3,9 @@
 namespace CiviUpgradeManagerBundle\Controller;
 
 use CiviUpgradeManagerBundle\BuildRepository;
+use CiviUpgradeManagerBundle\CmsMap;
 use CiviUpgradeManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
-use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,39 +17,58 @@ class CheckController extends Controller {
   const NIGHTLY_SUMMARY_URL = 'https://dist.civicrm.org/by-date/latest/summary.json';
   const CACHE_TTL = 120;
 
+  /**
+   * Get metadata about the various tarballs available for the
+   * stable, rc, or nightly release.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
   public function checkAction(Request $request) {
     try {
-      switch ($request->get('stability')) {
-        case 'rc':
-          $latestRc = $this->getLatestRc();
-          $stable = $this->getLatestStable();
-          $result
-            = ($latestRc && version_compare($latestRc['version'], $stable['version'], '>='))
-            ? $latestRc : $stable;
-          return $this->createJson($result, 200);
-
-        case 'stable':
-          return $this->createJson($this->getLatestStable(), 200);
-
-        case 'nightly':
-          return $this->createJson($this->getLatestNightly(), 200);
-
-        default:
-          return $this->createJson(array(
-            'rev' => NULL,
-            'message' => 'Missing required argument: stability=(nightly|rc|stable)',
-          ), 404);
-      }
-    } catch (\RuntimeException $e) {
-      /** @var Logger $logger */
-      $logger = $this->get('logger');
-      $logger->error('Failed to check on available tarballs', array(
+      $revSpec = $this->findRevByStability($request->get('stability'));
+      return $this->createJson($revSpec, $revSpec['rev'] === NULL ? 404 : 200);
+    }
+    catch (\RuntimeException $e) {
+      $this->get('logger')->error('Failed to check on available tarballs', array(
         'exception' => $e,
       ));
-      return $this->createJson(array(
-        'rev' => NULL,
-        'message' => 'Unexpected exception',
-      ), 500);
+      return $this->createJsonError('Unexpected exception');
+    }
+  }
+
+  /**
+   * Get the download for the stable, rc, or nightly tarball.
+   *
+   * Ex: "GET /download/civicrm-nightly-joomla.zip".
+
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+   */
+  public function downloadAction(Request $request) {
+    try {
+      if (!preg_match(';^civicrm-(stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;', $request->get('file'), $matches)) {
+        return $this->createJsonError('File not found. File name appears malformed.', 404);
+      }
+      list ($full, $stability, $cms) = $matches;
+
+      $revSpec = $this->findRevByStability($stability);
+      if ($revSpec['rev'] === NULL) {
+        return $this->createJson($revSpec, 404);
+      }
+
+      $cmsMap = CmsMap::getMap();
+      if (!isset($cmsMap[$cms]) || !isset($revSpec['tar'][$cmsMap[$cms]])) {
+        return $this->createJsonError('File not found. CMS name appears invalid.', 404);
+      }
+
+      return $this->redirect($revSpec['tar'][$cmsMap[$cms]]);
+    }
+    catch (\RuntimeException $e) {
+      $this->get('logger')->error('Failed to check on available tarballs', array(
+        'exception' => $e,
+      ));
+      return $this->createJsonError('Unexpected exception');
     }
   }
 
@@ -113,6 +132,20 @@ class CheckController extends Controller {
     return new Response(json_encode($data), $status, array(
       'Content-type' => 'application/json',
     ));
+  }
+
+  /**
+   * Create a Response object of json data -- with just an error message.
+   *
+   * @param string $errorMessage
+   * @param int $status
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  protected function createJsonError($errorMessage, $status = 500) {
+    return $this->createJson(array(
+      'rev' => NULL,
+      'message' => $errorMessage,
+    ), $status);
   }
 
   /**
@@ -200,7 +233,7 @@ class CheckController extends Controller {
       'timestamp' => array(
         'epoch' => $targetTimestamp,
         'pretty' => date('r', $targetTimestamp),
-      )
+      ),
     );
 
     foreach ($buildRepo->getFiles() as $file) {
@@ -210,6 +243,38 @@ class CheckController extends Controller {
     }
 
     return $def;
+  }
+
+  /**
+   * @param $stability
+   * @return array
+   */
+  protected function findRevByStability($stability) {
+    switch ($stability) {
+      case 'rc':
+        $latestRc = $this->getLatestRc();
+        $stable = $this->getLatestStable();
+        $result
+          = ($latestRc && version_compare($latestRc['version'], $stable['version'], '>='))
+          ? $latestRc : $stable;
+        break;
+
+      case 'stable':
+        $result = $this->getLatestStable();
+        break;
+
+      case 'nightly':
+        $result = $this->getLatestNightly();
+        break;
+
+      default:
+        $result = array(
+          'rev' => NULL,
+          'message' => 'Missing required argument: stability=(nightly|rc|stable)',
+        );
+        return $result;
+    }
+    return $result;
   }
 
 }
