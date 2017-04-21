@@ -2,17 +2,21 @@
 
 A Symfony project created on September 26, 2016, 9:26 am.
 
-### Setup
+### Setup: Baseline
 
 ```
 git clone https://github.com/civicrm/civicrm-upgrade-manager
 cd civicrm-upgrade-manager
 composer install
 php bin/console doctrine:schema:create
+php bin/console server:run
 ```
 
-Next, you'll need credentials for scanning data in the Google Cloud Storage
-system. For example:
+### Setup: Retrieve list of automated builds
+
+To display automated builds (such as nightlies and RC's), you'll need
+credentials for Google Cloud Storage system.
+
  * Login to https://console.cloud.google.com/iam-admin/projects
  * Select "Project => CiviCRM"
  * Select "Service Accounts"
@@ -21,11 +25,6 @@ system. For example:
    * You'll want to create key (JSON).
  * Copy the JSON file to `app/config/gcloud.json`
 
-Finally, start the web server, e.g.
-
-```
-php bin/console server:run
-```
 
 ### Route: `GET /check`
 
