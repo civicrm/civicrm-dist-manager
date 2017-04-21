@@ -4,5 +4,9 @@ check:
     defaults: { _controller: CiviUpgradeManagerBundle:Check:check }
 
 download:
+    path:     /download
+    defaults: { _controller: CiviUpgradeManagerBundle:Check:downloadList }
+
+download_file:
     path:     /download/{file}
     defaults: { _controller: CiviUpgradeManagerBundle:Check:download }

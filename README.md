@@ -42,6 +42,10 @@ For example:
    for the most recent release-candidate. (Alternatively, if the RC has been
    superceded by the final/stable release, then it will return that.)
 
+### Route: `GET /download`
+
+Display a web page listing the (synthetic) download links.
+
 ### Route: `GET /download/civicrm-{stability}-{cms}.{ext}`
 
 Use this end-point to download the latest stable, rc, or nightly archive.

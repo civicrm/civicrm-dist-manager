@@ -37,6 +37,36 @@ class CheckController extends Controller {
   }
 
   /**
+   * Display a list of (logical) files. (HTML)
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  public function downloadListAction(Request $request) {
+    $logicalFiles = array();
+    $suffixes = array(
+      'backdrop.tar.gz',
+      'drupal.tar.gz',
+      'drupal6.tar.gz',
+      'joomla.zip',
+      'wordpress.zip',
+      'l10n.tar.gz'
+    );
+    foreach (array('NIGHTLY', 'RC', 'STABLE') as $stability) {
+      foreach ($suffixes as $suffix) {
+        $basename = "civicrm-$stability-$suffix";
+        $logicalFiles[$basename] = $this->generateUrl('download_file', array(
+          'file' => $basename,
+        ));
+      }
+    }
+
+    return $this->render('CiviUpgradeManagerBundle:Check:downloadList.html.twig', array(
+      'logicalFiles' => $logicalFiles,
+    ));
+  }
+
+  /**
    * Get the download for the stable, rc, or nightly tarball.
    *
    * Ex: "GET /download/civicrm-NIGHTLY-joomla.zip".
