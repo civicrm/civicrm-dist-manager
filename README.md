@@ -34,18 +34,19 @@ Some simple redirects are implemented at the httpd level.  See
 These are required for correctly providing service, but they are not
 required for local development of the PHP logic.
 
-### Route: `GET /civicrm-{version}-{cms}.{ext}` (legacy script)
+### Route: `GET /civicrm-{version}-{cms}.{ext}` (Redirect)
 
-This route works a bit different from normal Symfony routing -- the file
-`app/LegacyRouter.php` is hardwired into the `AppKernel`.
+This allows you download a specific version of CiviCRM.
 
-> This could probably be done in a better way.
+It works a bit different from normal Symfony routing -- the file
+`app/LegacyRouter.php` is hardwired into the `AppKernel`. There's
+probably a better way to do this.
 
-### Route: `GET /latest`
+### Route: `GET /latest` (HTML)
 
 Display a web page listing the (synthetic) download links.
 
-### Route: `GET /latest/civicrm-{stability}-{cms}.{ext}`
+### Route: `GET /latest/civicrm-{stability}-{cms}.{ext}` (Redirect)
 
 Use this end-point to download the latest stable, rc, or nightly archive.
 
