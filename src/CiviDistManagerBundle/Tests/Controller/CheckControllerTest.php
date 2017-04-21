@@ -37,6 +37,7 @@ class CheckControllerTest extends WebTestCase {
     $cases[7] = array('civicrm-RC-wordpress.zip', ';/civicrm-[\d\.]+-wordpress-?\d*.zip;');
     $cases[8] = array('civicrm-RC-joomla.zip', ';/civicrm-[\d\.]+-joomla-?\d*.zip;');
     $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-[\d\.]+-backdrop(-unstable)?-?\d*.tar.gz;');
+    $cases[10] = array('civicrm-46NIGHTLY-drupal.tar.gz', ';/civicrm-build/4.6/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
 
     return $cases;
   }

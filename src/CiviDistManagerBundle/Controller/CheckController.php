@@ -52,7 +52,7 @@ class CheckController extends Controller {
       'wordpress.zip',
       'l10n.tar.gz',
     );
-    foreach (array('NIGHTLY', 'RC', 'STABLE') as $stability) {
+    foreach (array('NIGHTLY', 'RC', 'STABLE', '46NIGHTLY') as $stability) {
       foreach ($suffixes as $suffix) {
         $basename = "civicrm-$stability-$suffix";
         $logicalFiles[$basename] = $this->generateUrl('download_file', array(
@@ -76,7 +76,7 @@ class CheckController extends Controller {
    */
   public function downloadAction(Request $request) {
     try {
-      if (!preg_match(';^civicrm-(stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $request->get('file'), $matches)) {
+      if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $request->get('file'), $matches)) {
         return $this->createJsonError('File not found. File name appears malformed.', 404);
       }
       $stability = strtolower($matches[1]);
@@ -139,14 +139,6 @@ class CheckController extends Controller {
       return (bool) preg_match(';^[0-9\.]+-rc$;', $file['branch']);
     }));
     return $this->getLatestRevByBranch($targetBranch);
-  }
-
-  /**
-   * @return array
-   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
-   */
-  protected function getLatestNightly() {
-    return $this->getLatestRevByBranch('master');
   }
 
   /**
@@ -298,7 +290,11 @@ class CheckController extends Controller {
         break;
 
       case 'nightly':
-        $result = $this->getLatestNightly();
+        $result = $this->getLatestRevByBranch('master');
+        break;
+
+      case '46nightly':
+        $result = $this->getLatestRevByBranch('4.6');
         break;
 
       default:
