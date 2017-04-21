@@ -42,6 +42,19 @@ For example:
    for the most recent release-candidate. (Alternatively, if the RC has been
    superceded by the final/stable release, then it will return that.)
 
+### Route: `GET /download/civicrm-{stability}-{cms}.{ext}`
+
+Use this end-point to locate the latest upgrade. The route accepts
+one mandatory parameter, `stability` (`nightly`, `rc`, or `stable`).
+
+For example:
+
+ * `http://localhost/download/civicrm-nightly-drupal6.tar.gz`
+ * `http://localhost/download/civicrm-stable-drupal.tar.gz`
+ * `http://localhost/download/civicrm-stable-wordpress.zip`
+ * `http://localhost/download/civicrm-rc-joomla.zip`
+
+
 ### Route: `POST /report`
 
 Use this end-point report about the upgrade. Generally, the intent is to
