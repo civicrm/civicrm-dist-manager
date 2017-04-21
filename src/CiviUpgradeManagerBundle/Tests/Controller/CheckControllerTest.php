@@ -27,10 +27,10 @@ class CheckControllerTest extends WebTestCase {
 
   public function getDownloadExamples() {
     $cases = array();
-    $cases[0] = array('civicrm-STABLE-drupal.tar.gz', ';/civicrm-stable/civicrm-[\d\.]+-drupal.tar.gz;');
-    $cases[1] = array('civicrm-STABLE-joomla.zip', ';/civicrm-stable/civicrm-[\d\.]+-joomla.zip;');
-    $cases[2] = array('civicrm-STABLE-wordpress.zip', ';/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;');
-    $cases[3] = array('civicrm-STABLE-l10n.tar.gz', ';/civicrm-stable/civicrm-[\d\.]+-l10n.tar.gz;');
+    $cases[0] = array('civicrm-STABLE-drupal.tar.gz', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-drupal.tar.gz;');
+    $cases[1] = array('civicrm-STABLE-joomla.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-joomla.zip;');
+    $cases[2] = array('civicrm-STABLE-wordpress.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-wordpress.zip;');
+    $cases[3] = array('civicrm-STABLE-l10n.tar.gz', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-l10n.tar.gz;');
     $cases[4] = array('civicrm-NIGHTLY-drupal.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
     $cases[5] = array('civicrm-NIGHTLY-drupal6.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal6-\d+.tar.gz;');
     $cases[6] = array('civicrm-NIGHTLY-l10n.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-l10n-?\d+.tar.gz;');
@@ -93,11 +93,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-drupal.tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-drupal.tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-drupal6.tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-drupal6.tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-wordpress.zip;',
       $data['tar']['WordPress']);
   }
 
