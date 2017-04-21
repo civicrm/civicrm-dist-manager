@@ -133,15 +133,13 @@ class BuildRepository {
    * @return array|null
    */
   private function parseFileRecord($file) {
-    if (preg_match(';^([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)-(\d+)\.(tar.gz|zip|tgz)$;', $file, $matches)) {
+    $result = NULL;
+    if (preg_match(';^([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable)?-(\d+)\.(tar.gz|zip|tgz)$;', $file, $matches)) {
       $cmsMap = CmsMap::getMap();
-      list ($full, $branch, $version, $ign, $cmsFile, $ts, $ext) = $matches;
+      list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
       $tsEpoch = $this->parseTimestamp($ts);
-      if (!isset($cmsMap[$cmsFile])) {
-        return NULL;
-      }
-      else {
-        return array(
+      if (isset($cmsMap[$cmsFile])) {
+        $result = array(
           'file' => $file,
           'url' => $this->getUrl($file),
           'branch' => $branch,
@@ -152,7 +150,7 @@ class BuildRepository {
         );
       }
     }
-    return NULL;
+    return $result;
   }
 
 }

@@ -6,22 +6,32 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CheckControllerTest extends WebTestCase {
 
-  public function testDownloadStableWordPress() {
+  /**
+   * @param $file
+   * @param $regex
+   * @dataProvider getDownloadExamples
+   */
+  public function testDownload($file, $regex) {
     $client = static::createClient();
-    $client->request('GET', '/download/civicrm-stable-wordpress.zip', array(
-      'stability' => 'stable',
-    ));
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;',
-      $client->getResponse()->headers->get('Location'));
+    $client->request('GET', "/download/$file");
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm;', $client->getResponse()->headers->get('Location'));
+    $this->assertRegex($regex, $client->getResponse()->headers->get('Location'));
   }
 
-  public function testDownloadNightlyDrupal() {
-    $client = static::createClient();
-    $client->request('GET', '/download/civicrm-NIGHTLY-drupal.tar.gz', array(
-      'stability' => 'stable',
-    ));
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
-      $client->getResponse()->headers->get('Location'));
+  public function getDownloadExamples() {
+    $cases = array();
+    $cases[0] = array('civicrm-STABLE-drupal.tar.gz', ';/civicrm-stable/civicrm-[\d\.]+-drupal.tar.gz;');
+    $cases[1] = array('civicrm-STABLE-joomla.zip', ';/civicrm-stable/civicrm-[\d\.]+-joomla.zip;');
+    $cases[2] = array('civicrm-STABLE-wordpress.zip', ';/civicrm-stable/civicrm-[\d\.]+-wordpress.zip;');
+    $cases[3] = array('civicrm-STABLE-l10n.tar.gz', ';/civicrm-stable/civicrm-[\d\.]+-l10n.tar.gz;');
+    $cases[4] = array('civicrm-NIGHTLY-drupal.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
+    $cases[5] = array('civicrm-NIGHTLY-drupal6.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal6-\d+.tar.gz;');
+    $cases[6] = array('civicrm-NIGHTLY-l10n.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-l10n-?\d+.tar.gz;');
+    $cases[7] = array('civicrm-RC-wordpress.zip', ';/civicrm-[\d\.]+-wordpress-?\d*.zip;');
+    $cases[8] = array('civicrm-RC-joomla.zip', ';/civicrm-[\d\.]+-joomla-?\d*.zip;');
+    $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-[\d\.]+-backdrop(-unstable)?-?\d*.tar.gz;');
+
+    return $cases;
   }
 
   public function testCheckRc() {

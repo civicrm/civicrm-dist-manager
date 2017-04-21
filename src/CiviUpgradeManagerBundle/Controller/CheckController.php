@@ -18,7 +18,7 @@ class CheckController extends Controller {
 
   /**
    * Get metadata about the various tarballs available for the
-   * stable, rc, or nightly release.
+   * stable, rc, or nightly release. (JSON)
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @return \Symfony\Component\HttpFoundation\Response
@@ -239,7 +239,8 @@ class CheckController extends Controller {
       ),
     );
 
-    foreach ($buildRepo->getFiles() as $file) {
+    $files = $buildRepo->getFiles();
+    foreach ($files as $file) {
       if ($file['branch'] === $targetBranch && $file['rev'] === $targetRev) {
         $def['tar'][$file['uf']] = $file['url'];
       }
