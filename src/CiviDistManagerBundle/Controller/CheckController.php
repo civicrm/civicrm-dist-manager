@@ -55,9 +55,14 @@ class CheckController extends Controller {
     foreach (array('STABLE', 'RC', 'NIGHTLY', '46NIGHTLY') as $stability) {
       foreach ($suffixes as $suffix) {
         $basename = "civicrm-$stability-$suffix";
-        $logicalFiles[$basename] = $this->generateUrl('download_file', array(
-          'file' => $basename,
-        ));
+        list (, , $revSpec) = $this->parseFileName($basename);
+        $logicalFiles[$basename] = array(
+          'rev' => $revSpec['rev'],
+          'basename' => $basename,
+          'url' => $this->generateUrl('download_file', array(
+            'file' => $basename,
+          )),
+        );
       }
     }
 
@@ -76,13 +81,7 @@ class CheckController extends Controller {
    */
   public function downloadAction(Request $request) {
     try {
-      if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $request->get('file'), $matches)) {
-        return $this->createJsonError('File not found. File name appears malformed.', 404);
-      }
-      $stability = strtolower($matches[1]);
-      $cms = $matches[2];
-
-      $revSpec = $this->findRevByStability($stability);
+      list ($stability, $cms, $revSpec) = $this->parseFileName($request->get('file'));
       if ($revSpec['rev'] === NULL) {
         return $this->createJson($revSpec, 404);
       }
@@ -100,6 +99,16 @@ class CheckController extends Controller {
       ));
       return $this->createJsonError('Unexpected exception');
     }
+  }
+
+  private function parseFileName($file) {
+    if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $file, $matches)) {
+      return array(NULL, NULL, array('rev' => NULL, 'message' => 'Unrecognized stability or CMS'));
+    }
+    $stability = strtolower($matches[1]);
+    $cms = $matches[2];
+    $revSpec = $this->findRevByStability($stability);
+    return array($stability, $cms, $revSpec);
   }
 
   /**
