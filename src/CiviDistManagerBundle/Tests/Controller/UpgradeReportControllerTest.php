@@ -51,6 +51,7 @@ class UpgradeReportControllerTest extends WebTestCase {
       'name' => $name,
       'revision' => '1.0.2',
       'started' => strtotime('2001-02-03 12:00'),
+      'cvVersion' =>  '0.2.3',
     ));
     $json = $this->checkJsonResponse($client->getResponse(), 200);
     $this->assertEquals('Saved', $json['message']);

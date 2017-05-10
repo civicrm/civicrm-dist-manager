@@ -112,6 +112,7 @@ POST http://localhost/report
   siteId => $site_id
   reporter => me@example.org
   revision => $check['rev']
+  cvVersion => $versionString,
   downloadUrl => $check['tar']['Drupal']
   started => time()
   startReport => civicrm_api3('System', 'get')
