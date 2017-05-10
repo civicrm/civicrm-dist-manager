@@ -126,6 +126,13 @@ class UpgradeReport {
   private $finishReport;
 
   /**
+   * @var string
+   *
+   * @ORM\Column(name="testReport", type="text", length=262144, nullable=true)
+   */
+  private $testReport;
+
+  /**
    * @var \DateTime
    *
    * @ORM\Column(name="failed", type="datetime", nullable=true)
@@ -361,6 +368,20 @@ class UpgradeReport {
    */
   public function setFinishReport($finishReport) {
     $this->finishReport = $finishReport;
+  }
+
+  /**
+   * @return string
+   */
+  public function getTestReport() {
+    return $this->testReport;
+  }
+
+  /**
+   * @param string $testReport
+   */
+  public function setTestReport($testReport) {
+    $this->testReport = $testReport;
   }
 
   /**
