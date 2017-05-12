@@ -82,17 +82,33 @@ For example:
 
 ### Route: `POST /report` (Web service)
 
-Use this end-point report about the upgrade. Generally, the intent is to
-report about each step of the upgrade as it happens. The basic rules of
-this end-point are:
+Use this end-point report about the upgrade.  Generally, the intent is to
+report about each step of the upgrade as it happens, and the data-model
+matches the entity `UpgradeReport`.  Submissions should include some
+combination of these fields:
 
- * The data model matches the entity `UpgradeReport`.
- * The `name` is a unique identifier for this upgrade-invocation. (Suggestion: Use a random number with 128-bits of entropy.)
- * The `name` and `siteId` are required on all requests. (For updates, the `name` identifies the updated recorded, and the `siteId` authenticates.)
- * The fields `reporter`, `revision` and `downloadUrl` should be included as part of the first submission.
- * The fields `status` and `stage` are autocomputed.
- * All other fields can be submitted once.
- * Once written, fields are immutable.
+ * Common (_required for all requests_)
+   * `siteId` (`string`): A stable/long-term site id. (Reused across many upgrades.) Aim for 16-32 bytes. (Note: `siteId` is kept private.)
+   * `name` (`string`: A unique identifier for this upgrade-invocation. Aim for 32 bytes. (Suggestion: Use a random number with 128-bits of entropy.) (Note: The `name` may be discussed among various developers/contributors.)
+ * Create report (_required for first submission_)
+   * `cvVersion` (`string`, write-once): The revision of `cv` (e.g. `0.4.5`).
+   * `revision` (`string`, write-once): The name of the precise revision being downloaded (e.g. `4.7.16-201701020304`).
+   * `reporter` (`string`, write-once): The email address of the site administrator.
+   * `downloadUrl` (`string`, write-once): The URL of the tarball being downloaded.
+ * Complete the download stage
+   * `downloaded` (`int`, write-once): Time at which download completed. Seconds since epoch.
+ * Complete the extraction stage
+   * `extracted` (`int`, write-once): Time at which extraction completed. Seconds since epoch.
+ * Complete the upgrade stage
+   * `upgraded` (`int`, write-once): Time at which extraction completed. Seconds since epoch.
+   * `upgradeReport` (`string`, write-once): JSON-encoded data about the upgrade. (Generally, `System.get`.)
+ * Finalize the main upgrade report
+   * `finished` (`int`, write-once): Time at which extraction completed. Seconds since epoch.
+   * `finishReport` (`string`, write-once): Report about the system's post-upgrade configuration. (Generally, `System.get`.) JSON-encoded.
+ * Post an advisory test report about additional tests
+   * `testReport` (`string`, write-once): Optional, open-ended report about custom inhouse tests. JSON-encoded data.
+ * Report a problem with the upgrade
+   * `problem` (`string`, write-once):
 
 ### Use Case: Performing an automated upgrade (pseudocode)
 
@@ -112,6 +128,7 @@ POST http://localhost/report
   siteId => $site_id
   reporter => me@example.org
   revision => $check['rev']
+  cvVersion => $versionString,
   downloadUrl => $check['tar']['Drupal']
   started => time()
   startReport => civicrm_api3('System', 'get')

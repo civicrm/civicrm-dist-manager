@@ -37,6 +37,13 @@ class UpgradeReport {
   /**
    * @var string
    *
+   * @ORM\Column(name="cvVersion", type="string", length=64, nullable=true)
+   */
+  private $cvVersion;
+
+  /**
+   * @var string
+   *
    * @ORM\Column(name="reporter", type="string", length=255, nullable=true)
    */
   private $reporter;
@@ -119,6 +126,13 @@ class UpgradeReport {
   private $finishReport;
 
   /**
+   * @var string
+   *
+   * @ORM\Column(name="testReport", type="text", length=262144, nullable=true)
+   */
+  private $testReport;
+
+  /**
    * @var \DateTime
    *
    * @ORM\Column(name="failed", type="datetime", nullable=true)
@@ -172,6 +186,20 @@ class UpgradeReport {
    */
   public function setRevision($revision) {
     $this->revision = $revision;
+  }
+
+  /**
+   * @return string
+   */
+  public function getCvVersion() {
+    return $this->cvVersion;
+  }
+
+  /**
+   * @param string $cvVersion
+   */
+  public function setCvVersion($cvVersion) {
+    $this->cvVersion = $cvVersion;
   }
 
   /**
@@ -340,6 +368,20 @@ class UpgradeReport {
    */
   public function setFinishReport($finishReport) {
     $this->finishReport = $finishReport;
+  }
+
+  /**
+   * @return string
+   */
+  public function getTestReport() {
+    return $this->testReport;
+  }
+
+  /**
+   * @param string $testReport
+   */
+  public function setTestReport($testReport) {
+    $this->testReport = $testReport;
   }
 
   /**
