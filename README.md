@@ -18,6 +18,12 @@ php bin/console server:run
 To display automated builds (such as nightlies and RC's), you'll need
 credentials for Google Cloud Storage system.
 
+If you do not have access to CiviCRM's Google Cloud Storage, then ask
+someone on the civicrm-infra team for a read-access key.
+
+If you do have access to Google Cloud Storage, then you can create an
+account:
+
  * Login to https://console.cloud.google.com/iam-admin/projects
  * Select "Project => CiviCRM"
  * Select "Service Accounts"
@@ -25,6 +31,7 @@ credentials for Google Cloud Storage system.
    * The account does not need any special permissions. It just needs read-access to public resources.
    * You'll want to create key (JSON).
  * Copy the JSON file to `app/config/gcloud.json`
+
 
 ### Setup: httpd redirects
 
@@ -107,7 +114,8 @@ combination of these fields:
    * `finishReport` (`string`, write-once): Report about the system's post-upgrade configuration. (Generally, `System.get`.) JSON-encoded.
  * Post an advisory test report about additional tests
    * `testReport` (`string`, write-once): Optional, open-ended report about custom inhouse tests. JSON-encoded data.
- * Report a problem with the upgrade
+ * Report a fatal problem with the upgrade
+   * `failed` (`int`, write-once): Time at which the failure arose. Seconds since epoch.
    * `problem` (`string`, write-once):
 
 ### Use Case: Performing an automated upgrade (pseudocode)
