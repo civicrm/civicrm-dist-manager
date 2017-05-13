@@ -211,7 +211,7 @@ class CheckController extends Controller {
       'rev' => $rev,
       'tar' => array(
         'Backdrop' => sprintf('%s/%s/civicrm-%s-%s.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $backdropFile, $rev),
+          self::STABLE_DOWNLOAD_URL, $rev, $rev, $backdropFile),
         'Drupal' => sprintf('%s/%s/civicrm-%s-drupal.tar.gz',
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
         'Drupal6' => sprintf('%s/%s/civicrm-%s-drupal6.tar.gz',
