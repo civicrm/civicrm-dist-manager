@@ -34,7 +34,11 @@
 
     <ul>
         {% for file in logicalFiles %}
-            <li><a href="{{ file.url }}">{{ file.basename }}</a> ({{ file.rev }})</li>
+            <li><a href="{{ file.url }}">{{ file.basename }}</a> ({% if file.inspect_url is not empty %}
+                <a href="{{ file.inspect_url }}">{{ file.rev }}</a>
+                {% else %}
+                {{ file.rev }}
+                {% endif %})</li>
         {% endfor %}
     </ul>
 {% endblock %}

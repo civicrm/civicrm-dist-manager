@@ -62,7 +62,14 @@ class CheckController extends Controller {
           'url' => $this->generateUrl('download_file', array(
             'file' => $basename,
           )),
+          'inspect_url' => NULL,
         );
+
+        if (strpos($revSpec['rev'], '-') !== FALSE) {
+          $logicalFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
+            'file' => $basename,
+          ));
+        }
       }
     }
 
@@ -99,6 +106,46 @@ class CheckController extends Controller {
       ));
       return $this->createJsonError('Unexpected exception');
     }
+  }
+
+  /**
+   * View the build report for the file
+   *
+   * Ex: "GET /latest/civicrm-NIGHTLY-joomla.zip".
+
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+   */
+  public function inspectAction(Request $request) {
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+
+    list ($stability, $cms, $revSpec) = $this->parseFileName($request->get('file'));
+    if ($revSpec['rev'] === NULL) {
+      return $this->createNotFoundException("File not found. Confusing revSpec.");
+    }
+
+    $cmsMap = CmsMap::getMap();
+    if (!isset($cmsMap[$cms]) || !isset($revSpec['tar'][$cmsMap[$cms]])) {
+      return $this->createNotFoundException('File not found. CMS name appears invalid.');
+    }
+
+    $fileUrl = $revSpec['tar'][$cmsMap[$cms]];
+    $jsonDef = $buildRepo->fetchJsonDef($fileUrl);
+
+    return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
+      'jsonDef' => $jsonDef,
+      'gitBrowsers' => array(
+        'civicrm-core' => 'https://github.com/civicrm/civicrm-core/commits',
+        'civicrm-packages' => 'https://github.com/civicrm/civicrm-packages/commits',
+        'civicrm-joomla' => 'https://github.com/civicrm/civicrm-joomla/commits',
+        'civicrm-backdrop@1.x' => 'https://github.com/civicrm/civicrm-backdrop/commits',
+        'civicrm-drupal@6.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
+        'civicrm-drupal@7.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
+        'civicrm-drupal@8.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
+        'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
+      )
+    ));
   }
 
   private function parseFileName($file) {

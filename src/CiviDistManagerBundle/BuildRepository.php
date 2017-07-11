@@ -99,6 +99,27 @@ class BuildRepository {
   }
 
   /**
+   * For a given tarball, lookup the corresponding JSON build def.
+   *
+   * @param string $tarFileUrl
+   * @return array
+   * @throws \Exception
+   */
+  public function fetchJsonDef($tarFileUrl) {
+    if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable)?-(\d+)\.(tar.gz|zip|tgz)$;', $tarFileUrl, $matches)) {
+      throw new \Exception("Failed to determine JSON metadata URL");
+    }
+
+    list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
+    $jsonUrl = $this->getUrl("$branch/civicrm-$version-$ts.json");
+    if (!$this->cache->contains($jsonUrl)) {
+      $content = file_get_contents($jsonUrl);
+      $this->cache->save($jsonUrl, $content, self::CACHE_TTL);
+    }
+    return json_decode($this->cache->fetch($jsonUrl), TRUE);
+  }
+
+  /**
    * @return array
    */
   private function fetchFileNames() {
@@ -146,6 +167,7 @@ class BuildRepository {
           'version' => $version,
           'rev' => "$version-$ts",
           'uf' => $cmsMap[$cmsFile],
+          'ts' => $ts,
           'timestamp' => $tsEpoch,
         );
       }

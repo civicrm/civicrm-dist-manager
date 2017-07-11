@@ -10,3 +10,7 @@ download:
 download_file:
     path:     /latest/{file}
     defaults: { _controller: CiviDistManagerBundle:Check:download }
+
+inspect_file:
+    path:     /latest/{file}/inspect
+    defaults: { _controller: CiviDistManagerBundle:Check:inspect }

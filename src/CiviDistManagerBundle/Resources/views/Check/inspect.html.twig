@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Downloads{% endblock %}
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    <table>
+        <tbody>
+        <tr>
+            <td>Version</td>
+            <td>{{ jsonDef.version }}</td>
+        </tr>
+        <tr>
+            <td>Timestamp (Pretty)</td>
+            <td>{{ jsonDef.timestamp.pretty }}</td>
+        </tr>
+        <tr>
+            <td>Timestamp (Epoch)</td>
+            <td>{{ jsonDef.timestamp.epoch }}</td>
+        </tr>
+
+        {% for repoName, repoDef in jsonDef.git %}
+            <tr>
+                <td>{{ repoName }}</td>
+                <td><a href="{{ gitBrowsers[repoName] }}/{{ repoDef.commit }}/" target="_blank">
+                        {{ repoDef.commit }}
+                    </a></td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endblock %}
