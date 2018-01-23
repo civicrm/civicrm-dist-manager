@@ -37,6 +37,28 @@ class BuildRepository {
     $this->cache = $cache;
   }
 
+  public function getFile($filters) {
+    $matches = array();
+    foreach ($this->getFiles() as $file) {
+      $match = TRUE;
+      foreach ($filters as $filterKey => $filterValue) {
+        $match = $match && ($file[$filterKey] === $filterValue);
+      }
+      if ($match) {
+        $matches[] = $file;
+      }
+    }
+    if (count($matches) === 0) {
+      return NULL;
+    }
+    elseif (count($matches) === 1) {
+      return $matches[0];
+    }
+    else {
+      throw new \RuntimeException("Found too many matches");
+    }
+  }
+
   /**
    * @return array
    */
@@ -106,7 +128,7 @@ class BuildRepository {
    * @throws \Exception
    */
   public function fetchJsonDef($tarFileUrl) {
-    if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable)?-(\d+)\.(tar.gz|zip|tgz)$;', $tarFileUrl, $matches)) {
+    if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable|-alt)?-(\d+)\.(tar.gz|zip|tgz)$;', $tarFileUrl, $matches)) {
       throw new \Exception("Failed to determine JSON metadata URL");
     }
 
