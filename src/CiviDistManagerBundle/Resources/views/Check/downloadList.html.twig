@@ -9,7 +9,7 @@
 
     {{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
 
-    <h1>Autobuild: List</h1>
+    <h1>Autobuild: Highlights</h1>
 
     <ul>
         {% for file in logicalFiles %}
@@ -20,4 +20,13 @@
                 {% endif %})</li>
         {% endfor %}
     </ul>
+
+    <h1>Autobuild: Browse</h1>
+
+    <ul>
+        {% for branch, branchUrl in branches %}
+            <li><a href="{{ branchUrl }}">{{ branch }}</a></li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}

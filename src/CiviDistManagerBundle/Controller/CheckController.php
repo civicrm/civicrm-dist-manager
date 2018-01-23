@@ -73,8 +73,19 @@ class CheckController extends Controller {
       }
     }
 
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+    $branches = array();
+    foreach ($buildRepo->getOptions('branch') as $branch) {
+      $branches[$branch] = $this->generateUrl('browse_branch', array(
+        'branch' => $branch,
+      ));
+    }
+    ksort($branches);
+
     return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
       'logicalFiles' => $logicalFiles,
+      'branches' => $branches,
     ));
   }
 
@@ -144,7 +155,7 @@ class CheckController extends Controller {
         'civicrm-drupal@7.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-drupal@8.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
-      )
+      ),
     ));
   }
 
