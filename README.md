@@ -72,6 +72,16 @@ For example:
  * `http://localhost/latest/civicrm-STABLE-wordpress.zip`
  * `http://localhost/latest/civicrm-RC-joomla.zip`
 
+
+### Route: `GET /latest/branch/{branch}/{ts}/civicrm-{stability}-{cms}-{ts}.{ext}` (Redirect)
+
+Use this end-point to download a particular build of a particular branch.
+
+For example:
+
+ * `http://localhost/latest/branch/master/201801140252/civicrm-4.7.31-drupal-201801140252.tar.gz`
+ * `http://localhost/latest/branch/4.6/201801140252/civicrm-4.6.35-wordpress-201801140252.zip`
+
 ### Route: `GET /check` (Web service)
 
 Use this end-point to check for metadata about an upgrade

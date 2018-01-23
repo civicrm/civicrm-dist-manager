@@ -14,3 +14,15 @@ download_file:
 inspect_file:
     path:     /latest/{file}/inspect
     defaults: { _controller: CiviDistManagerBundle:Check:inspect }
+
+browse_branch:
+    path:     /latest/branch/{branch}
+    defaults: { _controller: CiviDistManagerBundle:Browse:browse }
+
+download_branch_file:
+    path:     /latest/branch/{branch}/{ts}/{basename}
+    defaults: { _controller: CiviDistManagerBundle:Browse:download }
+
+inspect_branch_build:
+    path:     /latest/branch/{branch}/{ts}/{basename}/inspect
+    defaults: { _controller: CiviDistManagerBundle:Browse:inspect }

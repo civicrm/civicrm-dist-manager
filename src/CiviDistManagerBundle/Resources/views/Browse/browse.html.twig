@@ -1,0 +1,21 @@
+<h1>Autobuild: Disclaimer</h1>
+
+{{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
+
+<h1>Autobuild: Browse: <code>{{ targetBranch }}</code></h1>
+
+<ul>
+    {% for buildRec in byTimestamp %}
+        <li>{{ buildRec.ts }}
+            <ul>
+                {% for file in buildRec.files %}
+                    <li>
+                        <a href="{{ file._download_url }}">{{ file.basename }}</a>
+                        (<a href="{{ file._inspect_url }}">inspect</a>)
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+
+    {% endfor %}
+</ul>
