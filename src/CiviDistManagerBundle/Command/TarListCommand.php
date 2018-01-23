@@ -35,8 +35,13 @@ $ bin/console tar:list 4.6*/*drupal*
       $files = $buildRepo->getFiles();
     }
 
-    foreach ($files as $file) {
-      $output->writeln($file['file']);
+    if ($output->isVerbose()) {
+      $output->writeln(json_encode($files, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+    else {
+      foreach ($files as $file) {
+        $output->writeln($file['file']);
+      }
     }
   }
 
