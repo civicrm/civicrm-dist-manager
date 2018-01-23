@@ -14,8 +14,11 @@ class CmsMap {
       'drupal' => 'Drupal',
       'drupal6' => 'Drupal6',
       'wordpress' => 'WordPress',
+      'wporg' => 'WordPress',
       'joomla' => 'Joomla',
+      'joomla-alt' => 'Joomla',
       'l10n' => 'L10n',
+      'starterkit' => 'Drupal',
     );
   }
 
