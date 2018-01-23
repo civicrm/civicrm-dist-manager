@@ -5,32 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Autobuilds: About</h1>
+    <h1>Autobuild: Disclaimer</h1>
 
-    <p>This page lists the latest autobuild tarballs. The autobuild tarballs are provided <strong>for testing purposes</strong>. Important notes:</p>
+    {{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
 
-    <ul>
-        <li>These files are generated from the latest, bleeding-edge code in the CiviCRM git repositories
-            (<a href="https://github.com/civicrm/civicrm-core/">civicrm-core.git</a>,
-            <a href="https://github.com/civicrm/civicrm-drupal/">civicrm-drupal.git</a>,
-            <a href="https://github.com/civicrm/civicrm-joomla/">civicrm-joomla.git</a>,
-            <a href="https://github.com/civicrm/civicrm-packages/">civicrm-packages.git</a>,
-            <a href="https://github.com/civicrm/civicrm-wordpress/">civicrm-wordpress.git</a>).
-        </li>
-        <li><strong>These files should only be installed on experimental/testing/staging servers.</strong> Do
-            <strong>not</strong> install on live/production servers.
-        </li>
-        <li><strong>There may be no upgrade path for sites running these tarballs.</strong> For example, if you install
-            the bleeding-edge code for 4.5.x on Tuesday and then upgrade to the next bleeding-edge code for 4.5.x on
-            Wednesday,
-            the upgrade process may or may not work -- leaving the system in an undefined, subtly broken state.
-        </li>
-        <li>When using these tarballs, please install a clean site <strong>or</strong> upgrade a (copied) dataset from a
-            stable release.
-        </li>
-    </ul>
-
-    <h1>Autobuilds: List</h1>
+    <h1>Autobuild: List</h1>
 
     <ul>
         {% for file in logicalFiles %}
