@@ -4,6 +4,7 @@ namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
 use CiviDistManagerBundle\CmsMap;
+use CiviDistManagerBundle\RevDocRepository;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -205,7 +206,9 @@ class CheckController extends Controller {
     $targetBranch = VersionUtil::max($buildRepo->getOptions('branch', function ($file) {
       return (bool) preg_match(';^[0-9\.]+-rc$;', $file['branch']);
     }));
-    return $this->getLatestRevByBranch($targetBranch);
+    return $this->container->get('rev_doc_repository')->findLatest(function($rev) use ($targetBranch) {
+      return $rev['branch'] === $targetBranch;
+    });
   }
 
   /**
@@ -296,50 +299,8 @@ class CheckController extends Controller {
   }
 
   /**
-   * Find all the latest revision (within a branch) and list out the
-   * various files/metadata.
-   *
-   * @param string $targetBranch
-   * @return array
-   */
-  protected function getLatestRevByBranch($targetBranch) {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-
-    $targetRev = VersionUtil::max($buildRepo->getOptions('rev', function ($file) use ($targetBranch) {
-      return $file['branch'] === $targetBranch;
-    }));
-
-    list ($targetTimestamp) = $buildRepo->getOptions('timestamp', function ($file) use ($targetBranch, $targetRev) {
-      return $file['branch'] === $targetBranch && $file['rev'] == $targetRev;
-    });
-
-    list ($targetVersion) = $buildRepo->getOptions('version', function ($file) use ($targetBranch, $targetRev) {
-      return $file['branch'] === $targetBranch && $file['rev'] == $targetRev;
-    });
-
-    $def = array(
-      'version' => $targetVersion,
-      'rev' => $targetRev,
-      'tar' => array(),
-      'timestamp' => array(
-        'epoch' => $targetTimestamp,
-        'pretty' => date('r', $targetTimestamp),
-      ),
-    );
-
-    $files = $buildRepo->getFiles();
-    foreach ($files as $file) {
-      if ($file['branch'] === $targetBranch && $file['rev'] === $targetRev) {
-        $def['tar'][$file['uf']] = $file['url'];
-      }
-    }
-
-    return $def;
-  }
-
-  /**
-   * @param $stability
+   * @param string $stability
+   *   Ex: 'rc', 'stable', 'nightly', '46nightly'.
    * @return array
    */
   protected function findRevByStability($stability) {
@@ -357,11 +318,15 @@ class CheckController extends Controller {
         break;
 
       case 'nightly':
-        $result = $this->getLatestRevByBranch('master');
+        $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
+          return $rev['branch'] === 'master';
+        });
         break;
 
       case '46nightly':
-        $result = $this->getLatestRevByBranch('4.6');
+        $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
+          return $rev['branch'] === '4.6';
+        });
         break;
 
       default:

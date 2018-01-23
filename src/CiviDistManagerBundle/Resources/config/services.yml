@@ -15,6 +15,10 @@ services:
     class: CiviDistManagerBundle\BuildRepository
     arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache' ]
 
+  rev_doc_repository:
+    class: CiviDistManagerBundle\RevDocRepository
+    arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository' ]
+
   gcloud_storage:
     class: Google\Cloud\Storage\StorageClient
     factory: ['CiviDistManagerBundle\GCloudFactory', createStorageClient]
