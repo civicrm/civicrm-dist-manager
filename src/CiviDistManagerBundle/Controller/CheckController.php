@@ -42,36 +42,6 @@ class CheckController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function downloadListAction(Request $request) {
-    $logicalFiles = array();
-    $suffixes = array(
-      'backdrop.tar.gz',
-      'drupal.tar.gz',
-      'drupal6.tar.gz',
-      'joomla.zip',
-      'wordpress.zip',
-      'l10n.tar.gz',
-    );
-    foreach (array('STABLE', 'RC', 'NIGHTLY', '46NIGHTLY') as $stability) {
-      foreach ($suffixes as $suffix) {
-        $basename = "civicrm-$stability-$suffix";
-        $revSpec = $this->findRevByFilename($basename);
-        $logicalFiles[$basename] = array(
-          'rev' => $revSpec['rev'],
-          'basename' => $basename,
-          'url' => $this->generateUrl('download_file', array(
-            'file' => $basename,
-          )),
-          'inspect_url' => NULL,
-        );
-
-        if (strpos($revSpec['rev'], '-') !== FALSE) {
-          $logicalFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
-            'file' => $basename,
-          ));
-        }
-      }
-    }
-
     /** @var BuildRepository $buildRepo */
     $buildRepo = $this->container->get('build_repository');
     $branches = array();
@@ -83,7 +53,7 @@ class CheckController extends Controller {
     ksort($branches);
 
     return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
-      'logicalFiles' => $logicalFiles,
+      'logicalFiles' => $this->findHighlights(),
       'branches' => $branches,
     ));
   }
@@ -351,6 +321,52 @@ class CheckController extends Controller {
         return $result;
     }
     return $result;
+  }
+
+  /**
+   * Get a list of pseudo-files that we want to highlight.
+   *
+   * Basically: for each of STABLE/RC/NIGHTLY, get all the
+   * latest files.
+   *
+   * @return array
+   *   List of individual files, keyed by base name..
+   *   Each has multiple, as in
+   *     - rev: '4.7.-201801020304'
+   *     - basename: 'civicrm-NIGHTLY-drupal.tar.gz'
+   *     - url: '/the/download/url'
+   *     - inspect_url: '/the/inspection/url'
+   */
+  protected function findHighlights() {
+    $logicalFiles = array();
+    $revDocs = array(
+      'STABLE' => $this->findRevByStability('stable'),
+      'RC' => $this->findRevByStability('rc'),
+      'NIGHTLY' => $this->findRevByStability('nightly'),
+      '46NIGHTLY' => $this->findRevByStability('46nightly'),
+    );
+    foreach ($revDocs as $stability => $revDoc) {
+      foreach ($revDoc['tar'] as $url) {
+        $fileExt = $this->parseFileExt($url);
+        $basename = "civicrm-$stability-$fileExt";
+
+        $logicalFiles[$basename] = array(
+          'rev' => $revDoc['rev'],
+          'basename' => $basename,
+          'url' => $this->generateUrl('download_file', array(
+            'file' => $basename,
+          )),
+          'inspect_url' => NULL,
+        );
+
+        if (strpos($revDoc['rev'], '-') !== FALSE) {
+          $logicalFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
+            'file' => $basename,
+          ));
+        }
+      }
+    }
+    return $logicalFiles;
   }
 
 }
