@@ -12,7 +12,7 @@
     <h1>Autobuild: Highlights</h1>
 
     <ul>
-        {% for file in logicalFiles %}
+        {% for file in highlightFiles %}
             <li><a href="{{ file.url }}">{{ file.basename }}</a> ({% if file.inspect_url is not empty %}
                 <a href="{{ file.inspect_url }}">{{ file.rev }}</a>
                 {% else %}

@@ -42,19 +42,9 @@ class CheckController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function downloadListAction(Request $request) {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-    $branches = array();
-    foreach ($buildRepo->getOptions('branch') as $branch) {
-      $branches[$branch] = $this->generateUrl('browse_branch', array(
-        'branch' => $branch,
-      ));
-    }
-    ksort($branches);
-
     return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
-      'logicalFiles' => $this->findHighlights(),
-      'branches' => $branches,
+      'highlightFiles' => $this->findHighlights(),
+      'branches' => $this->findBranchUrls(),
     ));
   }
 
@@ -338,7 +328,7 @@ class CheckController extends Controller {
    *     - inspect_url: '/the/inspection/url'
    */
   protected function findHighlights() {
-    $logicalFiles = array();
+    $highlightFiles = array();
     $revDocs = array(
       'STABLE' => $this->findRevByStability('stable'),
       'RC' => $this->findRevByStability('rc'),
@@ -350,7 +340,7 @@ class CheckController extends Controller {
         $fileExt = $this->parseFileExt($url);
         $basename = "civicrm-$stability-$fileExt";
 
-        $logicalFiles[$basename] = array(
+        $highlightFiles[$basename] = array(
           'rev' => $revDoc['rev'],
           'basename' => $basename,
           'url' => $this->generateUrl('download_file', array(
@@ -360,13 +350,29 @@ class CheckController extends Controller {
         );
 
         if (strpos($revDoc['rev'], '-') !== FALSE) {
-          $logicalFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
+          $highlightFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
             'file' => $basename,
           ));
         }
       }
     }
-    return $logicalFiles;
+    return $highlightFiles;
+  }
+
+  /**
+   * @return array
+   */
+  protected function findBranchUrls() {
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+    $branches = array();
+    foreach ($buildRepo->getOptions('branch') as $branch) {
+      $branches[$branch] = $this->generateUrl('browse_branch', array(
+        'branch' => $branch,
+      ));
+    }
+    ksort($branches);
+    return $branches;
   }
 
 }
