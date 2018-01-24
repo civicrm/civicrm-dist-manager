@@ -3,8 +3,6 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
-use CiviDistManagerBundle\CmsMap;
-use CiviDistManagerBundle\RevDocRepository;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -100,17 +98,8 @@ class CheckController extends Controller {
    */
   public function downloadAction(Request $request) {
     try {
-      list ($stability, $cms, $revSpec) = $this->parseFileName($request->get('file'));
-      if ($revSpec['rev'] === NULL) {
-        return $this->createJson($revSpec, 404);
-      }
-
-      $cmsMap = CmsMap::getMap();
-      if (!isset($cmsMap[$cms]) || !isset($revSpec['tar'][$cmsMap[$cms]])) {
-        return $this->createJsonError('File not found. CMS name appears invalid.', 404);
-      }
-
-      return $this->redirect($revSpec['tar'][$cmsMap[$cms]]);
+      $url = $this->findDownloadUrl($request->get('file'));
+      return $url ? $this->redirect($url) : $this->createJsonError("File not found", 404);
     }
     catch (\RuntimeException $e) {
       $this->get('logger')->error('Failed to check on available tarballs', array(
@@ -132,17 +121,7 @@ class CheckController extends Controller {
     /** @var BuildRepository $buildRepo */
     $buildRepo = $this->container->get('build_repository');
 
-    list ($stability, $cms, $revSpec) = $this->parseFileName($request->get('file'));
-    if ($revSpec['rev'] === NULL) {
-      return $this->createNotFoundException("File not found. Confusing revSpec.");
-    }
-
-    $cmsMap = CmsMap::getMap();
-    if (!isset($cmsMap[$cms]) || !isset($revSpec['tar'][$cmsMap[$cms]])) {
-      return $this->createNotFoundException('File not found. CMS name appears invalid.');
-    }
-
-    $fileUrl = $revSpec['tar'][$cmsMap[$cms]];
+    $fileUrl = $this->findDownloadUrl($request->get('file'));
     $jsonDef = $buildRepo->fetchJsonDef($fileUrl);
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
@@ -168,6 +147,42 @@ class CheckController extends Controller {
     $cms = $matches[2];
     $revSpec = $this->findRevByStability($stability);
     return array($stability, $cms, $revSpec);
+  }
+
+  /**
+   * @param string $desiredFile
+   *   Ex: 'civicrm-RC-drupal.tar.gz'
+   * @return string|NULL
+   */
+  protected function findDownloadUrl($desiredFile) {
+    list (, , $revSpec) = $this->parseFileName($desiredFile);
+    if ($revSpec['rev'] !== NULL) {
+      $expectExt = $this->parseFileExt($desiredFile);
+      foreach ($revSpec['tar'] as $possibleUrl) {
+        if ($expectExt === $this->parseFileExt($possibleUrl)) {
+          return $possibleUrl;
+        }
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * @param string $file
+   *   Ex: '/var/foo/civicrm-46NIGHTLY-drupal.tar.gz'
+   *   Ex: 'http://example.org/civicrm-4.7.30-wordpress-201801010101.zip'
+   * @return string|NULL
+   *   Ex: 'drupal.tar.gz'.
+   *   Ex: 'wordpress.zip'.
+   */
+  private function parseFileExt($file) {
+    $file = basename($file);
+    if (!preg_match(';^civicrm-([0-9\.]+|46nightly|stable|rc|nightly)-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)$;i', $file, $matches)) {
+      return NULL;
+    }
+    $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
+    $ext = $matches[3];
+    return $middle . '.' . $ext;
   }
 
   /**
