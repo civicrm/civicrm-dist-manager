@@ -54,7 +54,7 @@ class CheckController extends Controller {
     foreach (array('STABLE', 'RC', 'NIGHTLY', '46NIGHTLY') as $stability) {
       foreach ($suffixes as $suffix) {
         $basename = "civicrm-$stability-$suffix";
-        list (, , $revSpec) = $this->parseFileName($basename);
+        $revSpec = $this->findRevByFilename($basename);
         $logicalFiles[$basename] = array(
           'rev' => $revSpec['rev'],
           'basename' => $basename,
@@ -139,14 +139,13 @@ class CheckController extends Controller {
     ));
   }
 
-  private function parseFileName($file) {
-    if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-(backdrop|drupal|drupal6|joomla|wordpress|l10n)\.(zip|tar.gz|tgz)$;i', $file, $matches)) {
-      return array(NULL, NULL, array('rev' => NULL, 'message' => 'Unrecognized stability or CMS'));
+  private function findRevByFilename($file) {
+    if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-;i', $file, $matches)) {
+      return array('rev' => NULL, 'message' => 'Unrecognized stability or CMS');
     }
     $stability = strtolower($matches[1]);
-    $cms = $matches[2];
     $revSpec = $this->findRevByStability($stability);
-    return array($stability, $cms, $revSpec);
+    return $revSpec;
   }
 
   /**
@@ -155,7 +154,7 @@ class CheckController extends Controller {
    * @return string|NULL
    */
   protected function findDownloadUrl($desiredFile) {
-    list (, , $revSpec) = $this->parseFileName($desiredFile);
+    $revSpec = $this->findRevByFilename($desiredFile);
     if ($revSpec['rev'] !== NULL) {
       $expectExt = $this->parseFileExt($desiredFile);
       foreach ($revSpec['tar'] as $possibleUrl) {
