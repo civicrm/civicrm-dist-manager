@@ -27,6 +27,7 @@ class CheckControllerTest extends WebTestCase {
 
   public function getDownloadExamples() {
     $cases = array();
+    $cases[0] = array('civicrm-STABLE-backdrop.tar.gz', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-backdrop.tar.gz;');
     $cases[0] = array('civicrm-STABLE-drupal.tar.gz', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-drupal.tar.gz;');
     $cases[1] = array('civicrm-STABLE-joomla.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-joomla.zip;');
     $cases[2] = array('civicrm-STABLE-wordpress.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-wordpress.zip;');
@@ -36,7 +37,7 @@ class CheckControllerTest extends WebTestCase {
     $cases[6] = array('civicrm-NIGHTLY-l10n.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-l10n-?\d+.tar.gz;');
     $cases[7] = array('civicrm-RC-wordpress.zip', ';/civicrm-[\d\.]+-wordpress-?\d*.zip;');
     $cases[8] = array('civicrm-RC-joomla.zip', ';/civicrm-[\d\.]+-joomla-?\d*.zip;');
-    $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-[\d\.]+-backdrop(-unstable)?-?\d*.tar.gz;');
+    $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-[\d\.]+-backdrop-\d*.tar.gz;');
     $cases[10] = array('civicrm-46NIGHTLY-drupal.tar.gz', ';/civicrm-build/4.6/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
 
     return $cases;
