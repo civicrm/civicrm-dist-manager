@@ -239,7 +239,7 @@ class CheckController extends Controller {
    */
   protected function createBackfilledStableMetadata($rev) {
     $backdropFile = version_compare('4.7.20', $rev, '<=')
-      ? 'backdrop-unstable' : 'backdrop';
+      ? 'backdrop' : 'backdrop-unstable';
 
     return array(
       'version' => $rev,
