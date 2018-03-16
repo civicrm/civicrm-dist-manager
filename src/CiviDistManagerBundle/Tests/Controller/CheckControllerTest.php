@@ -32,12 +32,12 @@ class CheckControllerTest extends WebTestCase {
     $cases[1] = array('civicrm-STABLE-joomla.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-joomla.zip;');
     $cases[2] = array('civicrm-STABLE-wordpress.zip', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-wordpress.zip;');
     $cases[3] = array('civicrm-STABLE-l10n.tar.gz', ';/civicrm-stable/[\d\.]+/civicrm-[\d\.]+-l10n.tar.gz;');
-    $cases[4] = array('civicrm-NIGHTLY-drupal.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
-    $cases[5] = array('civicrm-NIGHTLY-drupal6.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-drupal6-\d+.tar.gz;');
-    $cases[6] = array('civicrm-NIGHTLY-l10n.tar.gz', ';/civicrm-build/.*/civicrm-[\d\.]+-l10n-?\d+.tar.gz;');
-    $cases[7] = array('civicrm-RC-wordpress.zip', ';/civicrm-[\d\.]+-wordpress-?\d*.zip;');
-    $cases[8] = array('civicrm-RC-joomla.zip', ';/civicrm-[\d\.]+-joomla-?\d*.zip;');
-    $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-[\d\.]+-backdrop-\d*.tar.gz;');
+    $cases[4] = array('civicrm-NIGHTLY-drupal.tar.gz', ';/civicrm-build/.*/civicrm-(\d|\.|alpha|beta)+-drupal-\d+.tar.gz;');
+    $cases[5] = array('civicrm-NIGHTLY-drupal6.tar.gz', ';/civicrm-build/.*/civicrm-(\d|\.|alpha|beta)+-drupal6-\d+.tar.gz;');
+    $cases[6] = array('civicrm-NIGHTLY-l10n.tar.gz', ';/civicrm-build/.*/civicrm-(\d|\.|alpha|beta)+-l10n-?\d+.tar.gz;');
+    $cases[7] = array('civicrm-RC-wordpress.zip', ';/civicrm-(\d|\.|alpha|beta)+-wordpress-?\d*.zip;');
+    $cases[8] = array('civicrm-RC-joomla.zip', ';/civicrm-(\d|\.|alpha|beta)+-joomla-?\d*.zip;');
+    $cases[9] = array('civicrm-RC-backdrop.tar.gz', ';/civicrm-(\d|\.|alpha|beta)+-backdrop-\d*.tar.gz;');
     $cases[10] = array('civicrm-46NIGHTLY-drupal.tar.gz', ';/civicrm-build/4.6/civicrm-[\d\.]+-drupal-\d+.tar.gz;');
 
     return $cases;
@@ -55,11 +55,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-[\d\.]+-drupal(\-\d+)?.tar.gz;',
+    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-(\d|\.|alpha|beta)+-drupal(\-\d+)?.tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-[\d\.]+-drupal6(\-\d+)?.tar.gz;',
+    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-(\d|\.|alpha|beta)+-drupal6(\-\d+)?.tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-[\d\.]+-wordpress(\-\d+)?.zip;',
+    $this->assertRegex(';^https://(download.civicrm.org|storage.googleapis.com)/.*civicrm-(\d|\.|alpha|beta)+-wordpress(\-\d+)?.zip;',
       $data['tar']['WordPress']);
   }
 
@@ -75,11 +75,11 @@ class CheckControllerTest extends WebTestCase {
     $data = json_decode($response->getContent(), 1);
 
     $this->assertRegex(';^[a-zA-Z0-9\-\.\+_]+$;', $data['rev']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-drupal(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-(\d|\.|alpha|beta)+-drupal(\-\d+).tar.gz;',
       $data['tar']['Drupal']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-drupal6(\-\d+).tar.gz;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-(\d|\.|alpha|beta)+-drupal6(\-\d+).tar.gz;',
       $data['tar']['Drupal6']);
-    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-[\d\.]+-wordpress(\-\d+).zip;',
+    $this->assertRegex(';^https://storage.googleapis.com/civicrm-build/master/civicrm-(\d|\.|alpha|beta)+-wordpress(\-\d+).zip;',
       $data['tar']['WordPress']);
   }
 
