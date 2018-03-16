@@ -153,6 +153,7 @@ class CheckController extends Controller {
 
   /**
    * @return array
+   *   RevDoc.
    *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function getLatestStable() {
@@ -215,8 +216,11 @@ class CheckController extends Controller {
   }
 
   /**
+   * Download a remote JSON document. If possible, use/store the
+   * document in a cache (per CACHE_TTL).
    *
    * @return array
+   *   Decoded JSON document.
    */
   protected function fetchJson($url) {
     /** @var Cache $cache */
@@ -234,8 +238,13 @@ class CheckController extends Controller {
   }
 
   /**
-   * @param $rev
+   * Given the version-number of a published release, generate a
+   * hypothetical revdoc.
+   *
+   * @param string $rev
    * @return array
+   *   RevDoc
+   *   Ex: $result['tar']['Drupal'] = 'https://download.civicrm.org/civicrm-4.7.12-drupal.tar.gz';
    */
   protected function createBackfilledStableMetadata($rev) {
     $backdropFile = version_compare('4.7.20', $rev, '<=')
@@ -320,7 +329,7 @@ class CheckController extends Controller {
    * latest files.
    *
    * @return array
-   *   List of individual files, keyed by base name..
+   *   List of individual files, keyed by base name.
    *   Each has multiple, as in
    *     - rev: '4.7.-201801020304'
    *     - basename: 'civicrm-NIGHTLY-drupal.tar.gz'
