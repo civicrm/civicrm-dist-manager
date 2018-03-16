@@ -136,7 +136,7 @@ class CheckController extends Controller {
    */
   private function parseFileExt($file) {
     $file = basename($file);
-    if (!preg_match(';^civicrm-([0-9\.]+|46nightly|stable|rc|nightly)-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)$;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)$;i', $file, $matches)) {
       return NULL;
     }
     $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
@@ -169,21 +169,6 @@ class CheckController extends Controller {
     }
 
     return $this->createBackfilledStableMetadata($rev);
-  }
-
-  /**
-   * @return array
-   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
-   */
-  protected function getLatestRc() {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-    $targetBranch = VersionUtil::max($buildRepo->getOptions('branch', function ($file) {
-      return (bool) preg_match(';^[0-9\.]+-rc$;', $file['branch']);
-    }));
-    return $this->container->get('rev_doc_repository')->findLatest(function($rev) use ($targetBranch) {
-      return $rev['branch'] === $targetBranch;
-    });
   }
 
   /**
@@ -282,18 +267,20 @@ class CheckController extends Controller {
   }
 
   /**
+   * Given a target stability level, find the latest matching RevDoc.
+   *
    * @param string $stability
    *   Ex: 'rc', 'stable', 'nightly', '46nightly'.
    * @return array
+   *   RevDoc
+   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
    */
   protected function findRevByStability($stability) {
     switch ($stability) {
       case 'rc':
-        $latestRc = $this->getLatestRc();
-        $stable = $this->getLatestStable();
-        $result
-          = ($latestRc && version_compare($latestRc['version'], $stable['version'], '>='))
-          ? $latestRc : $stable;
+        $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
+          return preg_match('/^\d+\.\d+\.beta/', $rev['version']);
+        });
         break;
 
       case 'stable':
