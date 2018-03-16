@@ -36,7 +36,7 @@ class RevDocRepository {
   protected $buildRepo;
 
   /**
-   * BuildRepository constructor.
+   * RevDocRepository constructor.
    * @param \Google\Cloud\Storage\Bucket $bucket
    * @param \Doctrine\Common\Cache\Cache $cache
    */
@@ -74,6 +74,9 @@ class RevDocRepository {
   }
 
   /**
+   * Filter the list of revdocs; among matches, pick the one with the most
+   * recent timestamp.
+   *
    * @param callable $filter
    *   Function($revDoc) => bool.
    * @return array|NULL
