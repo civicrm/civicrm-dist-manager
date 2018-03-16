@@ -152,9 +152,12 @@ class CheckController extends Controller {
   }
 
   /**
+   * Find the latest, official, stable release as described on the
+   * main civicrm.org downlod page.
+   *
    * @return array
    *   RevDoc.
-   *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
+   *   Ex: $result['tar']['Drupal'] = 'https://download.civicrm.org/civicrm-4.7.12-drupal.tar.gz';
    */
   protected function getLatestStable() {
     // Ex: $result['4.7']['releases'][0]['version'] == '4.7.alpha1';
@@ -168,7 +171,38 @@ class CheckController extends Controller {
       }
     }
 
-    return $this->createBackfilledStableMetadata($rev);
+    $backdropFile = version_compare('4.7.20', $rev, '<=')
+      ? 'backdrop' : 'backdrop-unstable';
+
+    return array(
+      'version' => $rev,
+      'rev' => $rev,
+      'tar' => array(
+        'Backdrop' => sprintf('%s/%s/civicrm-%s-%s.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev, $backdropFile),
+        'Drupal' => sprintf('%s/%s/civicrm-%s-drupal.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        'Drupal6' => sprintf('%s/%s/civicrm-%s-drupal6.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        'Joomla' => sprintf('%s/%s/civicrm-%s-joomla.zip',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
+        'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        'WordPress' => sprintf('%s/%s/civicrm-%s-wordpress.zip',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
+      ),
+      'git' => array(
+        'civicrm-core' => array('commit' => $rev),
+        'civicrm-joomla' => array('commit' => $rev),
+        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
+        'civicrm-packages' => array('commit' => $rev),
+        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
+        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
+        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
+        'civicrm-wordpress' => array('commit' => $rev),
+      ),
+    );
   }
 
   /**
@@ -220,50 +254,6 @@ class CheckController extends Controller {
       }
     }
     return json_decode($cache->fetch($url), 1);
-  }
-
-  /**
-   * Given the version-number of a published release, generate a
-   * hypothetical revdoc.
-   *
-   * @param string $rev
-   * @return array
-   *   RevDoc
-   *   Ex: $result['tar']['Drupal'] = 'https://download.civicrm.org/civicrm-4.7.12-drupal.tar.gz';
-   */
-  protected function createBackfilledStableMetadata($rev) {
-    $backdropFile = version_compare('4.7.20', $rev, '<=')
-      ? 'backdrop' : 'backdrop-unstable';
-
-    return array(
-      'version' => $rev,
-      'rev' => $rev,
-      'tar' => array(
-        'Backdrop' => sprintf('%s/%s/civicrm-%s-%s.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev, $backdropFile),
-        'Drupal' => sprintf('%s/%s/civicrm-%s-drupal.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Drupal6' => sprintf('%s/%s/civicrm-%s-drupal6.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Joomla' => sprintf('%s/%s/civicrm-%s-joomla.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
-        'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'WordPress' => sprintf('%s/%s/civicrm-%s-wordpress.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-      ),
-      'git' => array(
-        'civicrm-core' => array('commit' => $rev),
-        'civicrm-joomla' => array('commit' => $rev),
-        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
-        'civicrm-packages' => array('commit' => $rev),
-        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
-        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
-        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
-        'civicrm-wordpress' => array('commit' => $rev),
-      ),
-    );
   }
 
   /**
