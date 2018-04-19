@@ -38,16 +38,7 @@ class BuildRepository {
   }
 
   public function getFile($filters) {
-    $matches = array();
-    foreach ($this->getFiles() as $file) {
-      $match = TRUE;
-      foreach ($filters as $filterKey => $filterValue) {
-        $match = $match && ($file[$filterKey] === $filterValue);
-      }
-      if ($match) {
-        $matches[] = $file;
-      }
-    }
+    $matches = $this->getFilesByFilter($filters);
     if (count($matches) === 0) {
       return NULL;
     }
@@ -74,6 +65,24 @@ class BuildRepository {
       $this->cache->save($cacheKey, $files, self::CACHE_TTL);
     }
     return $this->cache->fetch($cacheKey);
+  }
+
+  /**
+   * @param array $filters
+   * @return array
+   */
+  public function getFilesByFilter($filters) {
+    $matches = array();
+    foreach ($this->getFiles() as $file) {
+      $match = TRUE;
+      foreach ($filters as $filterKey => $filterValue) {
+        $match = $match && ($file[$filterKey] === $filterValue);
+      }
+      if ($match) {
+        $matches[] = $file;
+      }
+    }
+    return $matches;
   }
 
   /**
@@ -174,6 +183,16 @@ class BuildRepository {
    * @param string $file
    *   Ex: 'master/civicrm-4.7.19-joomla-201704210350.zip'
    * @return array|null
+   *   Example:
+   *   - file: 'master/civicrm-4.7.19-joomla-201704210350.zip'
+   *   - basename: 'civicrm-4.7.19-joomla-201704210350.zip'
+   *   - url: 'https://foo.bar/civicrm-4.7.19-joomla-201704210350.zip'
+   *   - branch: 'master'
+   *   - version: '4.7.19'
+   *   - rev: '4.7.19-201704210350'
+   *   - uf': 'Joomla'
+   *   - ts: '201704210350'
+   *   - timestamp: 12345678
    */
   private function parseFileRecord($file) {
     $result = NULL;
