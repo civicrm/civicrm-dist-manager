@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BrowseController extends Controller {
 
-  const STABLE_DOWNLOAD_URL = 'https://storage.googleapis.com/civicrm/civicrm-stable';
   const CACHE_TTL = 120;
 
   /**
@@ -26,6 +25,36 @@ class BrowseController extends Controller {
 
     $files = $buildRepo->getFilesByWildcard($request->get('branch') . '/');
     $byTimestamp = array();
+
+    if (!empty($files)) {
+      $now = time();
+      $basenames = [
+        'civicrm-X.Y.Z-backdrop-LATEST.tar.gz',
+        'civicrm-X.Y.Z-drupal-LATEST.tar.gz',
+        'civicrm-X.Y.Z-drupal6-LATEST.tar.gz',
+        'civicrm-X.Y.Z-joomla-LATEST.zip',
+        'civicrm-X.Y.Z-joomla-alt-LATEST.zip',
+        'civicrm-X.Y.Z-l10n-LATEST.tar.gz',
+        'civicrm-X.Y.Z-starterkit-LATEST.tgz',
+        'civicrm-X.Y.Z-wordpress-LATEST.zip',
+        'civicrm-X.Y.Z-wporg-LATEST.zip',
+      ];
+
+      foreach ($basenames as $basename) {
+        $files[] = [
+          'file' => 'LATEST/' . $basename,
+            'basename' => $basename,
+            'branch' => $request->get('branch'),
+            'version' => 'X.Y.Z',
+            // 'url' => NULL,
+            'rev' => 'X.Y.Z-LATEST',
+            // 'uf' => 'Backdrop',
+            'ts' => 'LATEST',
+            'timestamp' => $now,
+        ];
+      }
+    }
+
     foreach ($files as $file) {
       $key = $file['ts'];
       if (!isset($byTimestamp[$key])) {
@@ -48,6 +77,7 @@ class BrowseController extends Controller {
       ));
       $byTimestamp[$key]['files'][] = $file;
     }
+
     uasort($byTimestamp, function($a, $b){
       return -1 * strnatcmp($a['ts'], $b['ts']);
     });
@@ -65,16 +95,7 @@ class BrowseController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function downloadAction(Request $request) {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-
-    $file = $buildRepo->getFile([
-      'branch' => $request->get('branch'),
-      'basename' => $request->get('basename'),
-    ]);
-    if (!$file) {
-      throw $this->createNotFoundException();
-    }
+    $file = $this->getFile($request->get('branch'), $request->get('ts'), $request->get('basename'));
 
     return $this->redirect($file['url']);
   }
@@ -91,13 +112,7 @@ class BrowseController extends Controller {
     /** @var BuildRepository $buildRepo */
     $buildRepo = $this->container->get('build_repository');
 
-    $file = $buildRepo->getFile([
-      'branch' => $request->get('branch'),
-      'basename' => $request->get('basename'),
-    ]);
-    if (!$file) {
-      throw $this->createNotFoundException();
-    }
+    $file = $this->getFile($request->get('branch'), $request->get('ts'), $request->get('basename'));
 
     $jsonDef = $buildRepo->fetchJsonDef($file['url']);
 
@@ -114,6 +129,45 @@ class BrowseController extends Controller {
         'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
       ),
     ));
+  }
+
+  /**
+   * Locate the file record from the buildrepo.
+   *
+   * @param string $branch
+   *   Ex: '5.0', 'master'.
+   * @param string $ts
+   *   Ex: 'LATEST', '201704210350'.
+   * @param string $basename
+   *   Ex: 'civicrm-X.Y.Z-drupal-LATEST.tar.gz'.
+   * @return array
+   */
+  protected function getFile($branch, $ts, $basename) {
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+
+    if ($ts === 'LATEST') {
+      $wildBasename = strtr($basename, [
+        'X.Y.Z' => '*',
+        'LATEST' => '*',
+      ]);
+      $files = $buildRepo->getFilesByWildcard($branch . '/' . $wildBasename);
+      usort($files, function($a, $b) {
+        return -1 * strnatcmp($a['ts'], $b['ts']);
+      });
+      $file = isset($files[0]) ? $files[0] : NULL;
+    }
+    else {
+      $file = $buildRepo->getFile([
+        'branch' => $branch,
+        'basename' => $basename,
+      ]);
+    }
+
+    if (!$file) {
+      throw $this->createNotFoundException();
+    }
+    return $file;
   }
 
 }
