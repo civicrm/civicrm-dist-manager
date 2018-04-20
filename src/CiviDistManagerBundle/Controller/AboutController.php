@@ -33,15 +33,12 @@ class AboutController extends Controller {
       return $this->redirect($url);
     }
     else {
-      throw $this->createNotFoundException("Failed to locate release notes for requested version");
+      $response = $this->render('CiviDistManagerBundle:About:unknown.html.twig', array(
+        'version' => $version,
+      ));
+      $response->setStatusCode(404);
+      return $response;
     }
-
-    //    $response = $this->render('CiviDistManagerBundle:About:view.html.twig', array(
-    //      'version' => $version,
-    //      'relNotes' => $this->getReleaseNotesHtml($version),
-    //    ));
-    //    $response->setSharedMaxAge(self::CACHE_TTL);
-    //    return $response;
   }
 
   /**
@@ -64,18 +61,24 @@ class AboutController extends Controller {
     $cacheId = md5('exists' . $version);
 
     if (!$cache->contains($cacheId)) {
-      $candidates = [
-        sprintf('https://github.com/civicrm/civicrm-core/blob/%s/release-notes/%s.md', VersionUtil::getMinor($version), VersionUtil::getPatch($version)),
-        sprintf('https://github.com/civicrm/civicrm-core/blob/%s/release-notes/%s.md', 'master', VersionUtil::getPatch($version)),
-        sprintf('https://github.com/civicrm/civicrm-core/blob/%s/release-notes/%s.md', VersionUtil::getPatch($version), VersionUtil::getPatch($version))
-      ];
       $url = NULL;
-      foreach ($candidates as $candidate) {
-        if ($this->fileExistsInHttp($candidate)) {
-          $url = $candidate;
-          break;
+
+      // Preferred: `5.0.1` ==> `5.0/release-notes/5.0.1.md`
+      // Fallbacks: `master/release-notes/5.0.1.md`, `5.0.1/release-notes/5.0.1.md`
+      // Fallbacks: `master/release-notes/5.0.0.md`, `5.0.1/release-notes/5.0.0.md`
+
+      $patchVers = [VersionUtil::getPatch($version), VersionUtil::getMinor($version) . '.0'];
+      $branchNames = [VersionUtil::getMinor($version), 'master', VersionUtil::getMinor($version)];
+      foreach ($patchVers as $patchVer) {
+        foreach ($branchNames as $branch) {
+          $candidate = sprintf('https://github.com/civicrm/civicrm-core/blob/%s/release-notes/%s.md', $branch, $patchVer);
+          if ($this->fileExistsInHttp($candidate)) {
+            $url = $candidate;
+            break 2;
+          }
         }
       }
+
       $cache->save($cacheId, $url, self::STANDARD_TTL);
     }
     return $cache->fetch($cacheId);
