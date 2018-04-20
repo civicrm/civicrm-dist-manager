@@ -26,3 +26,7 @@ download_branch_file:
 inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
     defaults: { _controller: CiviDistManagerBundle:Browse:inspect }
+
+about_version:
+    path:     /about/{version}
+    defaults: { _controller: CiviDistManagerBundle:About:view }
