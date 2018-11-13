@@ -28,7 +28,7 @@
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
-        "google/cloud-storage": "^1.0"
+        "google/cloud-storage": "^1.9"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
