@@ -14,7 +14,7 @@ services:
 
   build_repository:
     class: CiviDistManagerBundle\BuildRepository
-    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
+    arguments: [ '@event_dispatcher', '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
 
   rev_doc_repository:
     class: CiviDistManagerBundle\RevDocRepository
@@ -29,3 +29,10 @@ services:
     class: Google\Cloud\Storage\Bucket
     factory: ['CiviDistManagerBundle\GCloudFactory', createBucket]
     arguments: ['@gcloud_storage', '%gcloud_build_bucket%']
+
+  public_branch_filter:
+    class: 'CiviDistManagerBundle\PublicBranchFilter'
+    arguments: ['@civi_upgrade_manager.dist_cache']
+    tags:
+     -
+       name: 'kernel.event_subscriber'

@@ -1,6 +1,8 @@
 <?php
 
 namespace CiviDistManagerBundle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class BuildRepository
@@ -28,11 +30,18 @@ class BuildRepository {
   protected $tree;
 
   /**
+   * @var EventDispatcherInterface
+   */
+  protected $dispatcher;
+
+  /**
    * BuildRepository constructor.
+   * @param EventDispatcherInterface $dispatcher
    * @param \Google\Cloud\Storage\Bucket $bucket
    * @param \Doctrine\Common\Cache\Cache $cache
    */
-  public function __construct(\Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache) {
+  public function __construct(EventDispatcherInterface $dispatcher, \Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache) {
+    $this->dispatcher = $dispatcher;
     $this->bucket = $bucket;
     $this->cache = $cache;
   }
@@ -56,13 +65,17 @@ class BuildRepository {
   public function getFiles() {
     $cacheKey = __CLASS__ . '::' . $this->bucket->name() . '::files';
     if (!$this->cache->contains($cacheKey)) {
+      $files = [];
       foreach ($this->fetchFileNames() as $fileName) {
         $file = $this->parseFileRecord($fileName);
         if ($file) {
           $files[] = $file;
         }
       }
-      $this->cache->save($cacheKey, $files, self::CACHE_TTL);
+
+      $event = new GenericEvent(NULL, ['files' => $files]);
+      $this->dispatcher->dispatch('build_repository.getFiles', $event);
+      $this->cache->save($cacheKey, $event['files'], self::CACHE_TTL);
     }
     return $this->cache->fetch($cacheKey);
   }
