@@ -1,7 +1,7 @@
 parameters:
     gcloud_cred: "%kernel.root_dir%/config/gcloud.json"
     gcloud_project: "nifty-buffer-107523"
-    gcloud_bucket: "civicrm-build"
+    gcloud_build_bucket: "civicrm-build"
 
 services:
 #    civi_upgrade_manager.example:
@@ -13,18 +13,18 @@ services:
 
   build_repository:
     class: CiviDistManagerBundle\BuildRepository
-    arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache' ]
+    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
 
   rev_doc_repository:
     class: CiviDistManagerBundle\RevDocRepository
-    arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository' ]
+    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository' ]
 
   gcloud_storage:
     class: Google\Cloud\Storage\StorageClient
     factory: ['CiviDistManagerBundle\GCloudFactory', createStorageClient]
     arguments: ['%gcloud_cred%', '%gcloud_project%']
 
-  gcloud_bucket:
+  gcloud_build_bucket:
     class: Google\Cloud\Storage\Bucket
     factory: ['CiviDistManagerBundle\GCloudFactory', createBucket]
-    arguments: ['@gcloud_storage', '%gcloud_bucket%']
+    arguments: ['@gcloud_storage', '%gcloud_build_bucket%']
