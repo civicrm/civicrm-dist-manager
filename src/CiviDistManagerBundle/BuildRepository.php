@@ -211,6 +211,7 @@ class BuildRepository {
           'uf' => $cmsMap[$cmsFile],
           'ts' => $ts,
           'timestamp' => $tsEpoch,
+          'bucket' => $this->bucket->name(),
         );
       }
     }

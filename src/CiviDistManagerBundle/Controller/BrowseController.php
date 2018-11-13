@@ -5,6 +5,7 @@ namespace CiviDistManagerBundle\Controller;
 use CiviDistManagerBundle\BuildRepository;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
+use Google\Cloud\Core\Timestamp;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -97,7 +98,9 @@ class BrowseController extends Controller {
   public function downloadAction(Request $request) {
     $file = $this->getFile($request->get('branch'), $request->get('ts'), $request->get('basename'));
 
-    return $this->redirect($file['url']);
+    $bucket = \CiviDistManagerBundle\GCloudFactory::createBucket($this->container->get('gcloud_storage'), $file['bucket']);
+    $signedUrl = $bucket->object($file['file'])->signedUrl(new Timestamp(new \DateTime($this->container->getParameter('gcloud_url_ttl'))));
+    return $this->redirect($signedUrl);
   }
 
   /**

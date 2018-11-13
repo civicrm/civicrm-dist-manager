@@ -2,6 +2,7 @@ parameters:
     gcloud_cred: "%kernel.root_dir%/config/gcloud.json"
     gcloud_project: "nifty-buffer-107523"
     gcloud_build_bucket: "civicrm-build"
+    gcloud_url_ttl: "+6 hour"
 
 services:
 #    civi_upgrade_manager.example:
