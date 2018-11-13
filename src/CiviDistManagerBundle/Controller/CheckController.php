@@ -136,7 +136,7 @@ class CheckController extends Controller {
    */
   private function parseFileExt($file) {
     $file = basename($file);
-    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)$;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
       return NULL;
     }
     $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
