@@ -322,6 +322,9 @@ class CheckController extends Controller {
       '46NIGHTLY' => $this->findRevByStability('46nightly'),
     );
     foreach ($revDocs as $stability => $revDoc) {
+      if ($revDoc === NULL) {
+        continue;
+      }
       foreach ($revDoc['tar'] as $url) {
         $fileExt = $this->parseFileExt($url);
         $basename = "civicrm-$stability-$fileExt";
