@@ -18,7 +18,7 @@ services:
 
   rev_doc_repository:
     class: CiviDistManagerBundle\RevDocRepository
-    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository' ]
+    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository', '%gcloud_url_ttl%' ]
 
   gcloud_storage:
     class: Google\Cloud\Storage\StorageClient
