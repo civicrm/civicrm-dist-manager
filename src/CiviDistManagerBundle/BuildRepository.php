@@ -155,12 +155,12 @@ class BuildRepository {
     }
 
     list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
-    $jsonUrl = $this->getUrl("$branch/civicrm-$version-$ts.json");
-    if (!$this->cache->contains($jsonUrl)) {
-      $content = file_get_contents($jsonUrl);
-      $this->cache->save($jsonUrl, $content, self::CACHE_TTL);
+    $jsonPath = "$branch/civicrm-$version-$ts.json";
+    if (!$this->cache->contains($jsonPath)) {
+      $content = $this->bucket->object($jsonPath)->downloadAsString();
+      $this->cache->save($jsonPath, $content, self::CACHE_TTL);
     }
-    return json_decode($this->cache->fetch($jsonUrl), TRUE);
+    return json_decode($this->cache->fetch($jsonPath), TRUE);
   }
 
   /**
