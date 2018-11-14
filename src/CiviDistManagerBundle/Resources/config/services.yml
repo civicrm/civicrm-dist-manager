@@ -12,6 +12,10 @@ services:
     class: 'Doctrine\Common\Cache\FilesystemCache'
     arguments: ['%kernel.cache_dir%/dist']
 
+  gsu:
+    class: 'CiviDistManagerBundle\GStorageUrlFacade'
+    arguments: ['@civi_upgrade_manager.dist_cache', '@gcloud_storage']
+
   build_repository:
     class: CiviDistManagerBundle\BuildRepository
     arguments: [ '@event_dispatcher', '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
