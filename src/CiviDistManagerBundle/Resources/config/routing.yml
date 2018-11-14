@@ -3,8 +3,12 @@ check:
     path:     /check
     defaults: { _controller: CiviDistManagerBundle:Check:check }
 
-download:
+download_redir:
     path:     /latest
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+download:
+    path:     /latest/
     defaults: { _controller: CiviDistManagerBundle:Check:downloadList }
 
 download_file:
