@@ -40,3 +40,7 @@ services:
     tags:
      -
        name: 'kernel.event_subscriber'
+
+  esr_controller:
+    class: 'CiviDistManagerBundle\Controller\GenericGcloudController'
+    arguments: ['@service_container', '@gsu', 'gs://civicrm-private/civicrm-esr', 'CiviCRM Extended Security Releases']
