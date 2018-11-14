@@ -1,7 +1,8 @@
 parameters:
     gcloud_cred: "%kernel.root_dir%/config/gcloud.json"
     gcloud_project: "nifty-buffer-107523"
-    gcloud_bucket: "civicrm-build"
+    gcloud_build_bucket: "civicrm-build"
+    gcloud_url_ttl: "+6 hour"
 
 services:
 #    civi_upgrade_manager.example:
@@ -11,20 +12,35 @@ services:
     class: 'Doctrine\Common\Cache\FilesystemCache'
     arguments: ['%kernel.cache_dir%/dist']
 
+  gsu:
+    class: 'CiviDistManagerBundle\GStorageUrlFacade'
+    arguments: ['@civi_upgrade_manager.dist_cache', '@gcloud_storage']
+
   build_repository:
     class: CiviDistManagerBundle\BuildRepository
-    arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache' ]
+    arguments: [ '@event_dispatcher', '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
 
   rev_doc_repository:
     class: CiviDistManagerBundle\RevDocRepository
-    arguments: [ '@gcloud_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository' ]
+    arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository', '%gcloud_url_ttl%' ]
 
   gcloud_storage:
     class: Google\Cloud\Storage\StorageClient
     factory: ['CiviDistManagerBundle\GCloudFactory', createStorageClient]
     arguments: ['%gcloud_cred%', '%gcloud_project%']
 
-  gcloud_bucket:
+  gcloud_build_bucket:
     class: Google\Cloud\Storage\Bucket
     factory: ['CiviDistManagerBundle\GCloudFactory', createBucket]
-    arguments: ['@gcloud_storage', '%gcloud_bucket%']
+    arguments: ['@gcloud_storage', '%gcloud_build_bucket%']
+
+  public_branch_filter:
+    class: 'CiviDistManagerBundle\PublicBranchFilter'
+    arguments: ['@civi_upgrade_manager.dist_cache']
+    tags:
+     -
+       name: 'kernel.event_subscriber'
+
+  esr_controller:
+    class: 'CiviDistManagerBundle\Controller\GenericGcloudController'
+    arguments: ['@service_container', '@gsu', 'gs://civicrm-private/civicrm-esr', 'CiviCRM Extended Security Releases']

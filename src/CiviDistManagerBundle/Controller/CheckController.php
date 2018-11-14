@@ -136,7 +136,7 @@ class CheckController extends Controller {
    */
   private function parseFileExt($file) {
     $file = basename($file);
-    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)$;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
       return NULL;
     }
     $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
@@ -322,6 +322,9 @@ class CheckController extends Controller {
       '46NIGHTLY' => $this->findRevByStability('46nightly'),
     );
     foreach ($revDocs as $stability => $revDoc) {
+      if ($revDoc === NULL) {
+        continue;
+      }
       foreach ($revDoc['tar'] as $url) {
         $fileExt = $this->parseFileExt($url);
         $basename = "civicrm-$stability-$fileExt";

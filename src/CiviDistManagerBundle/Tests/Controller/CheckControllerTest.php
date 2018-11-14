@@ -6,9 +6,16 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CheckControllerTest extends WebTestCase {
 
-  public function testDownloadList() {
+  public function testDownloadRedirect() {
     $client = static::createClient();
     $client->request('GET', '/latest', array());
+    $this->assertRegex(';/latest/$;',
+      $client->getResponse()->headers->get('Location'));
+  }
+
+  public function testDownloadList() {
+    $client = static::createClient();
+    $client->request('GET', '/latest/', array());
     $this->assertRegex(';\<a href="[^"]*civicrm-NIGHTLY-drupal.tar.gz"\>;',
       $client->getResponse()->getContent());
   }

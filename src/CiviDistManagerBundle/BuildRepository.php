@@ -1,6 +1,8 @@
 <?php
 
 namespace CiviDistManagerBundle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class BuildRepository
@@ -28,11 +30,18 @@ class BuildRepository {
   protected $tree;
 
   /**
+   * @var EventDispatcherInterface
+   */
+  protected $dispatcher;
+
+  /**
    * BuildRepository constructor.
+   * @param EventDispatcherInterface $dispatcher
    * @param \Google\Cloud\Storage\Bucket $bucket
    * @param \Doctrine\Common\Cache\Cache $cache
    */
-  public function __construct(\Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache) {
+  public function __construct(EventDispatcherInterface $dispatcher, \Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache) {
+    $this->dispatcher = $dispatcher;
     $this->bucket = $bucket;
     $this->cache = $cache;
   }
@@ -56,13 +65,17 @@ class BuildRepository {
   public function getFiles() {
     $cacheKey = __CLASS__ . '::' . $this->bucket->name() . '::files';
     if (!$this->cache->contains($cacheKey)) {
+      $files = [];
       foreach ($this->fetchFileNames() as $fileName) {
         $file = $this->parseFileRecord($fileName);
         if ($file) {
           $files[] = $file;
         }
       }
-      $this->cache->save($cacheKey, $files, self::CACHE_TTL);
+
+      $event = new GenericEvent(NULL, ['files' => $files]);
+      $this->dispatcher->dispatch('build_repository.getFiles', $event);
+      $this->cache->save($cacheKey, $event['files'], self::CACHE_TTL);
     }
     return $this->cache->fetch($cacheKey);
   }
@@ -137,17 +150,17 @@ class BuildRepository {
    * @throws \Exception
    */
   public function fetchJsonDef($tarFileUrl) {
-    if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable|-alt)?-(\d+)\.(tar.gz|zip|tgz)$;', $tarFileUrl, $matches)) {
+    if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable|-alt)?-(\d+)\.(tar.gz|zip|tgz)(\?.*)?$;', $tarFileUrl, $matches)) {
       throw new \Exception("Failed to determine JSON metadata URL");
     }
 
     list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
-    $jsonUrl = $this->getUrl("$branch/civicrm-$version-$ts.json");
-    if (!$this->cache->contains($jsonUrl)) {
-      $content = file_get_contents($jsonUrl);
-      $this->cache->save($jsonUrl, $content, self::CACHE_TTL);
+    $jsonPath = "$branch/civicrm-$version-$ts.json";
+    if (!$this->cache->contains($jsonPath)) {
+      $content = $this->bucket->object($jsonPath)->downloadAsString();
+      $this->cache->save($jsonPath, $content, self::CACHE_TTL);
     }
-    return json_decode($this->cache->fetch($jsonUrl), TRUE);
+    return json_decode($this->cache->fetch($jsonPath), TRUE);
   }
 
   /**
@@ -211,6 +224,7 @@ class BuildRepository {
           'uf' => $cmsMap[$cmsFile],
           'ts' => $ts,
           'timestamp' => $tsEpoch,
+          'bucket' => $this->bucket->name(),
         );
       }
     }

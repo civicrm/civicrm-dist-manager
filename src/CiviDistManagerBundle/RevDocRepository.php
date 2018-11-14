@@ -1,6 +1,7 @@
 <?php
 
 namespace CiviDistManagerBundle;
+use Google\Cloud\Core\Timestamp;
 
 /**
  * Class RevDocRepository
@@ -36,14 +37,21 @@ class RevDocRepository {
   protected $buildRepo;
 
   /**
+   * @var string
+   *   Ex: "+90 min".
+   */
+  protected $urlTtl;
+
+  /**
    * RevDocRepository constructor.
    * @param \Google\Cloud\Storage\Bucket $bucket
    * @param \Doctrine\Common\Cache\Cache $cache
    */
-  public function __construct(\Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache, \CiviDistManagerBundle\BuildRepository $buildRepo) {
+  public function __construct(\Google\Cloud\Storage\Bucket $bucket, \Doctrine\Common\Cache\Cache $cache, \CiviDistManagerBundle\BuildRepository $buildRepo, $urlTtl) {
     $this->bucket = $bucket;
     $this->cache = $cache;
     $this->buildRepo = $buildRepo;
+    $this->urlTtl = $urlTtl;
   }
 
   /**
@@ -124,7 +132,7 @@ class RevDocRepository {
           ),
         ];
       }
-      $revDocs[$revSpecId]['tar'][$tarName] = $file['url'];
+      $revDocs[$revSpecId]['tar'][$tarName] = $this->bucket->object($file['file'])->signedUrl(new Timestamp(new \DateTime($this->urlTtl)));
     }
     return $revDocs;
   }

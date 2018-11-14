@@ -3,8 +3,12 @@ check:
     path:     /check
     defaults: { _controller: CiviDistManagerBundle:Check:check }
 
-download:
+download_redir:
     path:     /latest
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+download:
+    path:     /latest/
     defaults: { _controller: CiviDistManagerBundle:Check:downloadList }
 
 download_file:
@@ -30,3 +34,17 @@ inspect_branch_build:
 about_version:
     path:     /about/{version}
     defaults: { _controller: CiviDistManagerBundle:About:view }
+
+esr_redir:
+    path:     /esr
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+esr_base:
+    path:     /esr/
+    defaults: { _controller: esr_controller:browseAction, path: null }
+
+esr_path:
+    path:     /esr/{path}
+    defaults: { _controller: esr_controller:browseAction }
+    requirements:
+      path: .+
