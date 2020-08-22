@@ -12,6 +12,12 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class BuildRepository {
 
+  /**
+   * FIXME: Ugly hack to ignore security-related artifacts.
+   * This should really be a permission thing.
+   */
+  const BRANCH_BLACKLIST = ';secur;';
+
   const CACHE_TTL = 300;
 
   /**
@@ -67,6 +73,9 @@ class BuildRepository {
     if (!$this->cache->contains($cacheKey)) {
       $files = [];
       foreach ($this->fetchFileNames() as $fileName) {
+        if (preg_match(self::BRANCH_BLACKLIST, $fileName)) {
+          continue;
+        }
         $file = $this->parseFileRecord($fileName);
         if ($file) {
           $files[] = $file;
