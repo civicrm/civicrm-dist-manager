@@ -146,7 +146,7 @@ class RevDocRepository {
    *   Ex: 'Drupal' or 'Drupal6'.
    */
   protected function getTarName($file) {
-    if (!preg_match(';^civicrm-(.*)-(backdrop|drupal|drupal6|joomla|joomla-alt|starterkit|wordpress|wporg|l10n)(-[0-9]+)?\.(zip|tar.gz|tgz)$;i', $file['basename'], $matches)) {
+    if (!preg_match(';^civicrm-(.*)-(backdrop|drupal|drupal6|joomla|joomla-alt|standalone|starterkit|wordpress|wporg|l10n)(-[0-9]+)?\.(zip|tar.gz|tgz)$;i', $file['basename'], $matches)) {
       return NULL;
     }
     $cms = $matches[2];
@@ -156,6 +156,7 @@ class RevDocRepository {
       'drupal6' => 'Drupal6',
       'joomla' => 'Joomla',
       'joomla-alt' => 'JoomlaAlt',
+      'standalone' => 'Standalone',
       'starterkit' => 'StarterKit',
       'wordpress' => 'WordPress',
       'wporg' => 'WPOrg',

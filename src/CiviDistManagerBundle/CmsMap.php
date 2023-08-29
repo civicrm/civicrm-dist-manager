@@ -18,6 +18,7 @@ class CmsMap {
       'joomla' => 'Joomla',
       'joomla-alt' => 'Joomla',
       'l10n' => 'L10n',
+      'standalone' => 'Standalone',
       'starterkit' => 'Drupal',
     );
   }

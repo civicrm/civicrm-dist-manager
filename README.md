@@ -70,6 +70,7 @@ For example:
  * `http://localhost/latest/civicrm-NIGHTLY-drupal6.tar.gz`
  * `http://localhost/latest/civicrm-STABLE-drupal.tar.gz`
  * `http://localhost/latest/civicrm-STABLE-wordpress.zip`
+ * `http://localhost/latest/civicrm-STABLE-standalone.zip`
  * `http://localhost/latest/civicrm-RC-joomla.zip`
 
 
