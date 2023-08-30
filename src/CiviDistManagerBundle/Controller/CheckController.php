@@ -94,6 +94,7 @@ class CheckController extends Controller {
         'civicrm-drupal@6.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-drupal@7.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-drupal@8.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
+        'civicrm-standalone' => 'https://github.com/civicrm/civicrm-core/commits',
         'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
       ),
     ));
@@ -189,6 +190,8 @@ class CheckController extends Controller {
         // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
         'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        'Standalone' => sprintf('%s/%s/civicrm-%s-standalone.tar.gz',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
         'WordPress' => sprintf('%s/%s/civicrm-%s-wordpress.zip',
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
       ),
@@ -200,6 +203,7 @@ class CheckController extends Controller {
         'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
         'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
         'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
+        'civicrm-standalone' => array('commit' => $rev),
         'civicrm-wordpress' => array('commit' => $rev),
       ),
     );

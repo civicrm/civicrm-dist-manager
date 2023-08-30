@@ -36,6 +36,7 @@ class BrowseController extends Controller {
         'civicrm-X.Y.Z-joomla-LATEST.zip',
         'civicrm-X.Y.Z-joomla-alt-LATEST.zip',
         'civicrm-X.Y.Z-l10n-LATEST.tar.gz',
+        'civicrm-X.Y.Z-standalone-LATEST.tgz',
         'civicrm-X.Y.Z-starterkit-LATEST.tgz',
         'civicrm-X.Y.Z-wordpress-LATEST.zip',
         'civicrm-X.Y.Z-wporg-LATEST.zip',
@@ -124,6 +125,7 @@ class BrowseController extends Controller {
       'gitBrowsers' => array(
         'civicrm-core' => 'https://github.com/civicrm/civicrm-core/commits',
         'civicrm-packages' => 'https://github.com/civicrm/civicrm-packages/commits',
+        'civicrm-standalone' => 'https://github.com/civicrm/civicrm-core/commits',
         'civicrm-joomla' => 'https://github.com/civicrm/civicrm-joomla/commits',
         'civicrm-backdrop@1.x' => 'https://github.com/civicrm/civicrm-backdrop/commits',
         'civicrm-drupal@6.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
