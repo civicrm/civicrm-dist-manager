@@ -3,22 +3,40 @@
 This application manages the `civicrm.org` distribution/download frontend
 service, including redirects and reporting.
 
-### Setup: Baseline
+### Setup: Baseline (*Option 1, nix-shell*)
 
-Get the project:
+Install system requirements:
 
-```
-git clone https://github.com/civicrm/civicrm-upgrade-manager
-cd civicrm-upgrade-manager
-```
+* [nix package manager](https://nixos.org/download)
 
-Ensure that you have php 7.4 and composer 2.2. You can get these
-dependencies by running `nix-shell`. Then:
+Then:
 
 ```
+git clone https://github.com/civicrm/civicrm-dist-manager distmgr
+cd civicrm-dist-manager
+nix-shell
 composer install
-php -S localhost:8000 -t web/ web/app.php
+# Optional: If you don't want to use localhost:8000, then edit .loco/loco.yml.
+loco run
 ```
+
+### Setup: Baseline (*Option 2, manual*)
+
+Install system requirements:
+
+* PHP 7.4
+* composer
+* nginx
+
+Then:
+
+```
+git clone https://github.com/civicrm/civicrm-dist-manager
+cd civicrm-dist-manager
+composer install
+```
+
+Finally, add this new folder to your `nginx` configuration. See `nginx/site-example.conf` and `nginx/common.conf` for recommendations.
 
 ### Setup: Retrieve list of automated builds
 
@@ -39,14 +57,6 @@ account:
    * You'll want to create key (JSON).
  * Copy the JSON file to `app/config/gcloud.json`
 
-
-### Setup: httpd redirects
-
-Some simple redirects are implemented at the httpd level.  See
-`nginx/site-example.conf` and `nginx/common.conf`.
-
-These are required for correctly providing service, but they are not
-required for local development of the PHP logic.
 
 ### Test Suite
 
