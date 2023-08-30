@@ -9,32 +9,39 @@ services:
 #        class: CiviDistManagerBundle\Example
 #        arguments: ["@service_id", "plain_value", %parameter%]
   civi_upgrade_manager.dist_cache:
+    public: true
     class: 'Doctrine\Common\Cache\FilesystemCache'
     arguments: ['%kernel.cache_dir%/dist']
 
   gsu:
+    public: true
     class: 'CiviDistManagerBundle\GStorageUrlFacade'
     arguments: ['@civi_upgrade_manager.dist_cache', '@gcloud_storage']
 
   build_repository:
+    public: true
     class: CiviDistManagerBundle\BuildRepository
     arguments: [ '@event_dispatcher', '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache' ]
 
   rev_doc_repository:
+    public: true
     class: CiviDistManagerBundle\RevDocRepository
     arguments: [ '@gcloud_build_bucket', '@civi_upgrade_manager.dist_cache', '@build_repository', '%gcloud_url_ttl%' ]
 
   gcloud_storage:
+    public: true
     class: Google\Cloud\Storage\StorageClient
     factory: ['CiviDistManagerBundle\GCloudFactory', createStorageClient]
     arguments: ['%gcloud_cred%', '%gcloud_project%']
 
   gcloud_build_bucket:
+    public: true
     class: Google\Cloud\Storage\Bucket
     factory: ['CiviDistManagerBundle\GCloudFactory', createBucket]
     arguments: ['@gcloud_storage', '%gcloud_build_bucket%']
 
   public_branch_filter:
+    public: true
     class: 'CiviDistManagerBundle\PublicBranchFilter'
     arguments: ['@civi_upgrade_manager.dist_cache']
     tags:
@@ -42,5 +49,6 @@ services:
        name: 'kernel.event_subscriber'
 
   esr_controller:
+    public: true
     class: 'CiviDistManagerBundle\Controller\GenericGcloudController'
     arguments: ['@service_container', '@gsu', 'gs://civicrm-private/civicrm-esr', 'CiviCRM Extended Security Releases']
