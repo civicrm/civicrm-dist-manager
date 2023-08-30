@@ -1,14 +1,9 @@
-/**
- * This shell is suitable for compiling civix.phar.... and not much else.
- *
- * Ex: `nix-shell --run ./scripts/build.sh`
- */
-
 { pkgs ? import <nixpkgs> {} }:
 
 let
 
   buildkit = (import ./nix/buildkit.nix) { inherit pkgs; };
+  ## TIP: To update buildkit, run ./nix/buildkit-update.sh
 
 in
 
@@ -16,6 +11,8 @@ in
     nativeBuildInputs = buildkit.profiles.base ++ [
 
       buildkit.pkgs.php74
+      buildkit.pins.v2305.nginx
+      buildkit.pkgs.loco
       (buildkit.funcs.fetchPhar {
         name = "composer";
         url = "https://github.com/composer/composer/releases/download/2.2.21/composer.phar";
