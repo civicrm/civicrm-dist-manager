@@ -1,6 +1,6 @@
 {
     "name": "totten/civicrm.upgrade.manager",
-    "license": "proprietary",
+    "license": ["agpl-3.0-or-later"],
     "type": "project",
     "autoload": {
         "psr-4": {
