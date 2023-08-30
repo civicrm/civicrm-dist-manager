@@ -26,7 +26,6 @@
         "google/cloud-storage": "^1.9"
     },
     "require-dev": {
-        "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
