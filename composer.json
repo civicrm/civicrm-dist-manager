@@ -33,7 +33,7 @@
     "scripts": {
         "symfony-scripts": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache"
+            "./bin/console cache:clear --no-warmup"
         ],
         "post-install-cmd": [
             "@symfony-scripts"
