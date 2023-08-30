@@ -5,14 +5,20 @@ service, including redirects and reporting.
 
 ### Setup: Baseline
 
-TIP: Run composer 2.2.21 (composer 2.3+ conflicts with sensio/distribution-bundle)
+Get the project:
 
 ```
 git clone https://github.com/civicrm/civicrm-upgrade-manager
 cd civicrm-upgrade-manager
+```
+
+Ensure that you have php 7.4 and composer 2.2. You can get these
+dependencies by running `nix-shell`. Then:
+
+```
 composer install
 php bin/console doctrine:schema:create
-php bin/console server:run
+php -S localhost:8000 -t web/ web/app.php
 ```
 
 ### Setup: Retrieve list of automated builds
