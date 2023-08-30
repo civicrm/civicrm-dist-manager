@@ -3,6 +3,7 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Google\Cloud\Core\Timestamp;
@@ -122,18 +123,7 @@ class BrowseController extends Controller {
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
       'jsonDef' => $jsonDef,
-      'gitBrowsers' => array(
-        'civicrm-core' => 'https://github.com/civicrm/civicrm-core/commits',
-        'civicrm-packages' => 'https://github.com/civicrm/civicrm-packages/commits',
-        'civicrm-standalone' => 'https://github.com/civicrm/civicrm-core/commits',
-        'civicrm-joomla' => 'https://github.com/civicrm/civicrm-joomla/commits',
-        'civicrm-backdrop@1.x' => 'https://github.com/civicrm/civicrm-backdrop/commits',
-        'civicrm-drupal@6.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
-        'civicrm-drupal@7.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
-        'civicrm-drupal@8.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
-        'civicrm-drupal-8' => 'https://github.com/civicrm/civicrm-drupal-8/commits',
-        'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
-      ),
+      'gitBrowsers' => GitBrowsers::getAll(),
     ));
   }
 
