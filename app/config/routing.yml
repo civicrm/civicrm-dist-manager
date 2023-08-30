@@ -1,6 +1,6 @@
-civi_upgrade_manager_upgrade_report:
-    resource: "@CiviDistManagerBundle/Controller/UpgradeReportController.php"
-    type:     annotation
+#civi_upgrade_manager_upgrade_report:
+#    resource: "@CiviDistManagerBundle/Controller/UpgradeReportController.php"
+#    type:     annotation
 
 civi_upgrade_manager:
     resource: "@CiviDistManagerBundle/Resources/config/routing.yml"
