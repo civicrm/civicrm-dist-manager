@@ -3,7 +3,7 @@ worker_processes  2;
 pid               {{LOCO_SVC_VAR}}/nginx.pid;
 
 events {
-    use           epoll;
+    use           {{NGINX_EVENT_USE}};
     worker_connections  128;
 }
 

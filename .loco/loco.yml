@@ -36,6 +36,8 @@ services:
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
 
   nginx:
+    default_environment:
+      - NGINX_EVENT_USE=$(nginx_event_detect)
     run: 'nginx -p "$LOCO_SVC_VAR" -c "nginx.conf" -e "error.log"'
     pid_file: '$LOCO_SVC_VAR/nginx.pid'
     message: 'Nginx HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_ROOT</comment>".'
