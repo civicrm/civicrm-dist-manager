@@ -17,7 +17,6 @@ dependencies by running `nix-shell`. Then:
 
 ```
 composer install
-php bin/console doctrine:schema:create
 php -S localhost:8000 -t web/ web/app.php
 ```
 
