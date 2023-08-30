@@ -1,0 +1,43 @@
+format: 'loco-0.1'
+
+## This is the default configuration used for local development environments.
+
+#### General configuration
+default_environment:
+
+  ## LOCALHOST: Define the local IP address that we should bind to.
+  - LOCALHOST=127.0.0.1
+
+  ## Configure web service
+  - HTTPD_DOMAIN=localhost
+  - HTTPD_PORT=8000
+  - HTTPD_ROOT=$LOCO_PRJ/web
+
+  ## Configure other daemons. Most run on auxiliary/non-standard ports.
+  - PHPFPM_PORT=9999
+
+  ## XDEBUG_*: Enable or disable main XDebug options
+  #- XDEBUG_MODE=off
+  - XDEBUG_MODE=develop,debug
+  - XDEBUG_PORT=9003
+  #- XDEBUG_CONFIG=...
+
+#### Mandatory environment settings
+environment:
+  # CLI applications should use our stuff
+  - PATH=$LOCO_PRJ/.loco/bin:$PATH
+
+#### Functional service definitions
+services:
+
+  php-fpm:
+    run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
+    pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
+    message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+
+  nginx:
+    default_environment:
+      - NGINX_EVENT_USE=$(nginx_event_detect)
+    run: 'nginx -p "$LOCO_SVC_VAR" -c "nginx.conf" -e "error.log"'
+    pid_file: '$LOCO_SVC_VAR/nginx.pid'
+    message: 'Nginx HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_ROOT</comment>".'
