@@ -11,8 +11,8 @@ Install system requirements:
 
 Then:
 
-```
-git clone https://github.com/civicrm/civicrm-dist-manager distmgr
+```bash
+git clone https://github.com/civicrm/civicrm-dist-manager
 cd civicrm-dist-manager
 nix-shell
 composer install
@@ -30,7 +30,7 @@ Install system requirements:
 
 Then:
 
-```
+```bash
 git clone https://github.com/civicrm/civicrm-dist-manager
 cd civicrm-dist-manager
 composer install
