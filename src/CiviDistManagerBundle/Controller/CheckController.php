@@ -94,6 +94,7 @@ class CheckController extends Controller {
         'civicrm-drupal@6.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-drupal@7.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
         'civicrm-drupal@8.x' => 'https://github.com/civicrm/civicrm-drupal/commits',
+        'civicrm-drupal-8' => 'https://github.com/civicrm/civicrm-drupal-8/commits',
         'civicrm-standalone' => 'https://github.com/civicrm/civicrm-core/commits',
         'civicrm-wordpress' => 'https://github.com/civicrm/civicrm-wordpress/commits',
       ),
