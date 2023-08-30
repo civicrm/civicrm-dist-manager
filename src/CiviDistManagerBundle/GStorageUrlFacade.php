@@ -125,7 +125,7 @@ class GStorageUrlFacade {
   public function getDirectories($url) {
     $dirs = [];
     foreach ($this->getChildren($url) as $relPath => $absPath) {
-      if ($relPath{strlen($relPath) - 1} !== '/') {
+      if ($relPath[strlen($relPath) - 1] !== '/') {
         continue;
       }
       $dirs[$relPath] = $absPath;
@@ -144,7 +144,7 @@ class GStorageUrlFacade {
   public function getFiles($url) {
     $files = [];
     foreach ($this->getChildren($url) as $relPath => $absPath) {
-      if ($relPath{strlen($relPath) - 1} === '/') {
+      if ($relPath[strlen($relPath) - 1] === '/') {
         continue;
       }
       $files[$relPath] = $absPath;
