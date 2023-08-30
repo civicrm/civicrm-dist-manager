@@ -5,6 +5,8 @@ service, including redirects and reporting.
 
 ### Setup: Baseline
 
+TIP: Run composer 2.2.21 (composer 2.3+ conflicts with sensio/distribution-bundle)
+
 ```
 git clone https://github.com/civicrm/civicrm-upgrade-manager
 cd civicrm-upgrade-manager
