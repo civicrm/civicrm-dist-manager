@@ -18,6 +18,7 @@
     },
     "require": {
         "php": "~7.4",
+        "ext-json": "*",
         "doctrine/cache": "~1.13",
         "symfony/symfony": "~3.1",
         "symfony/monolog-bundle": "~3.0",
