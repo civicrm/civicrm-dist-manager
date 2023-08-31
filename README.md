@@ -3,7 +3,7 @@
 This application manages the `civicrm.org` distribution/download frontend
 service, including redirects and reporting.
 
-### Setup: Basic (*Option 1, nix-shell*)
+### Basic Setup (*Option 1, nix-shell*)
 
 Install system requirements:
 
@@ -20,7 +20,9 @@ composer install
 loco run
 ```
 
-### Setup: Basic (*Option 2, manual*)
+(*You will still need `app/config/gcloud.json` -- described below*).
+
+### Basic Setup (*Option 2, manual*)
 
 Install system requirements:
 
@@ -38,10 +40,13 @@ composer install
 
 Finally, add this new folder to your `nginx` configuration. See `nginx/site-example.conf` and `nginx/common.conf` for recommendations.
 
-### Setup: Google Cloud credentials
+(*You will still need `app/config/gcloud.json` -- described below*).
+
+### Google Cloud credentials
 
 You need to create `app/config/gcloud.json` in order to read data about available builds and releases.
 
+* If you don't have access to Google Cloud configuration UI, then you can ask someoneon civicrm-infra team for read-access key.
 * If you have access to Google Cloud configuration UI, then you can create credentials:
     * Login to https://console.cloud.google.com/iam-admin/projects
     * Select "Project => CiviCRM"
@@ -50,7 +55,6 @@ You need to create `app/config/gcloud.json` in order to read data about availabl
         * The account does not need any special permissions. It just needs read-access to public resources.
         * You'll want to create key (JSON).
     * Copy the JSON file to `app/config/gcloud.json`
-* If you don't have access to Google Cloud configuration UI, then you can ask someoneon civicrm-infra team for read-access key.
 * There is a copy of this on the production system.
 
 ### Test suite
