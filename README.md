@@ -3,7 +3,7 @@
 This application manages the `civicrm.org` distribution/download frontend
 service, including redirects and reporting.
 
-### Setup: Baseline (*Option 1, nix-shell*)
+### Setup: Basic (*Option 1, nix-shell*)
 
 Install system requirements:
 
@@ -20,7 +20,7 @@ composer install
 loco run
 ```
 
-### Setup: Baseline (*Option 2, manual*)
+### Setup: Basic (*Option 2, manual*)
 
 Install system requirements:
 
@@ -38,32 +38,27 @@ composer install
 
 Finally, add this new folder to your `nginx` configuration. See `nginx/site-example.conf` and `nginx/common.conf` for recommendations.
 
-### Setup: Retrieve list of automated builds
+### Setup: Google Cloud credentials
 
-To display automated builds (such as nightlies and RC's), you'll need
-credentials for Google Cloud Storage system.
+You need to create `app/config/gcloud.json` in order to read data about available builds and releases.
 
-If you do not have access to CiviCRM's Google Cloud Storage, then ask
-someone on the civicrm-infra team for a read-access key.
+* If you have access to Google Cloud configuration UI, then you can create credentials:
+    * Login to https://console.cloud.google.com/iam-admin/projects
+    * Select "Project => CiviCRM"
+    * Select "Service Accounts"
+    * Click "Create a Service Account"
+        * The account does not need any special permissions. It just needs read-access to public resources.
+        * You'll want to create key (JSON).
+    * Copy the JSON file to `app/config/gcloud.json`
+* If you don't have access to Google Cloud configuration UI, then you can ask someoneon civicrm-infra team for read-access key.
+* There is a copy of this on the production system.
 
-If you do have access to Google Cloud Storage, then you can create an
-account:
-
- * Login to https://console.cloud.google.com/iam-admin/projects
- * Select "Project => CiviCRM"
- * Select "Service Accounts"
- * Click "Create a Service Account"
-   * The account does not need any special permissions. It just needs read-access to public resources.
-   * You'll want to create key (JSON).
- * Copy the JSON file to `app/config/gcloud.json`
-
-
-### Test Suite
+### Test suite
 
 The tests are implemented with PHPUnit. Simply go to the project root and run:
 
 ```
-phpunit4
+phpunit8
 ```
 
 ### Route: `GET /civicrm-{version}-{cms}.{ext}` (Redirect)
