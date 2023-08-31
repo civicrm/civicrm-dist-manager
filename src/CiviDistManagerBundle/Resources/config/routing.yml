@@ -31,6 +31,10 @@ inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
     defaults: { _controller: CiviDistManagerBundle:Browse:inspect }
 
+about_list:
+    path:     /about/
+    defaults: { _controller: CiviDistManagerBundle:About:list }
+
 about_version:
     path:     /about/{version}
     defaults: { _controller: CiviDistManagerBundle:About:view }

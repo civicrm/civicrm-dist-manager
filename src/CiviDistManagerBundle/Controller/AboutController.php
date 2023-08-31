@@ -17,6 +17,13 @@ class AboutController extends Controller {
 
   const STANDARD_TTL = 3600, ERROR_TTL = 120;
 
+  public function listAction(Request $request) {
+    return $this->render('CiviDistManagerBundle:About:list.html.twig', [
+      'versions' => array_reverse($this->getGroupedVersions()),
+      'prototype' => $request->get('prototype'),
+    ]);
+  }
+
   /**
    * Landing page for information about a particular version of CiviCRM.
    *
@@ -172,6 +179,40 @@ class AboutController extends Controller {
       }
       return $parsedJson;
     }, []);
+  }
+
+  /**
+   * @return array
+   *   Ex: [..., '5.64.0', '5.63.2', '5.63.1', ..., '5.24.2', ...]
+   */
+  protected function getAllVersions() {
+    return static::cache("allVersions", function() {
+      /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
+      $gsu = $this->container->get('gsu');
+      $gsPaths = $gsu->getDirectories('gs://civicrm/civicrm-stable/');
+      $versions = [];
+      foreach ($gsPaths as $gsPath) {
+        $version = basename(rtrim($gsPath, '/'));
+        if (VersionUtil::isWellFormed($version)) {
+          $versions[] = $version;
+        }
+      }
+      usort($versions, 'version_compare');
+      return$versions;
+    }, []);
+  }
+
+  /**
+   * @return array
+   *   Ex: ['5.64' => ['5.64.1' => '/about/5.64.1']]
+   */
+  protected function getGroupedVersions() {
+    $all = $this->getAllVersions();
+    $result = [];
+    foreach ($all as $version) {
+      $result[VersionUtil::getMinor($version)][] = $version;
+    }
+    return $result;
   }
 
   /**

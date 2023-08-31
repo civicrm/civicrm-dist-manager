@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CiviCRM Versions{% endblock %}
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+
+    <ul>
+        {% for majorMinor,patches in versions %}
+            <li>
+                <strong>{{ majorMinor }}</strong>:
+                {% for patch in patches %}
+                    <a href="/about/{{ patch }}{{ prototype ? "?prototype=1" : "" }}">{{ patch }}</a>{{ not loop.last ? ',' }}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
