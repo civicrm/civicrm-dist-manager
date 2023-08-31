@@ -28,7 +28,17 @@ class AboutController extends Controller {
       throw $this->createNotFoundException("Invalid version");
     }
 
-    $url = $this->pickUrl($version);
+    // If requested with "?next=1", then show the draft implementation of UI.
+    if ($request->get('prototype')) {
+      return $this->render('CiviDistManagerBundle:About:about.html.twig', [
+        'version' => $version,
+        'files' => $this->getReleaseFiles($version),
+        'notes' => $this->getReleaseNotes($version),
+        'jsonDef' => $this->getReleaseJson($version),
+      ]);
+    }
+
+    $url = $this->pickRedirectUrl($version);
     if ($url) {
       return $this->redirect($url);
     }
@@ -53,7 +63,7 @@ class AboutController extends Controller {
    *   Ex: '5.0.1'.
    * @return string|NULL
    */
-  protected function pickUrl($version) {
+  protected function pickRedirectUrl($version) {
     /**
      * @var Cache
      */
@@ -95,26 +105,90 @@ class AboutController extends Controller {
     return $exists;
   }
 
-  //  protected function getReleaseNotesHtml($version) {
-  //    $cacheId = 'releaseNotes-' . $version . '.html';
-  //    if ($this->getCache()->contains($cacheId)) {
-  //      return $this->getCache()->fetch($cacheId);
-  //    }
-  //
-  //    $mdUrl = sprintf('https://github.com/civicrm/civicrm-core/raw/%s/release-notes/%s.md',
-  //      VersionUtil::getMinor($version), VersionUtil::getPatch($version));
-  //    $md = file_get_contents($mdUrl);
-  //    if (empty($md)) {
-  //      $parser /*sic*/ = new \cebe\markdown\GithubMarkdown();
-  //      $html = $parser->parse($md);
-  //      $this->getCache()->save($cacheId, $html, self::STANDARD_TTL);
-  //    }
-  //    else {
-  //      $html = sprintf("<p>Failed to load release notes for <code>%s</code>.</p>", $version);
-  //      $this->getCache()->save($cacheId, $html, self::ERROR_TTL);
-  //    }
-  //
-  //    return $this->getCache()->fetch($cacheId);
-  //  }
+  protected function getReleaseNotes($version) {
+    $cacheId = 'releaseNotes-' . $version . '.html';
+    if ($this->getCache()->contains($cacheId)) {
+      return $this->getCache()->fetch($cacheId);
+    }
+
+    $opts = [
+      'http' => [
+        'method' => 'GET',
+        'follow_location' => 1,
+        'max_redirects' => 10,
+      ],
+    ];
+    $mdUrl = sprintf('https://github.com/civicrm/civicrm-core/raw/%s/release-notes/%s.md',
+      VersionUtil::getMinor($version), VersionUtil::getPatch($version));
+    $md = file_get_contents($mdUrl, FALSE, stream_context_create($opts));
+    if (!empty($md)) {
+      $this->getCache()->save($cacheId, $md, self::STANDARD_TTL);
+      return $md;
+    }
+    else {
+      $placeholder = sprintf("Failed to load release notes for <code>%s</code>.", $version);
+      $this->getCache()->save($cacheId, $placeholder, self::ERROR_TTL);
+      return $placeholder;
+    }
+  }
+
+  /**
+   * @param string $version
+   * @return string[]
+   *   List of file names.
+   *   Ex: ['civicrm-1.2.3-drupal.tar.gz', 'civicrm-1.2.3-wordpress.zip']
+   */
+  protected function getReleaseFiles($version) {
+    if (!VersionUtil::isWellFormed($version)) {
+      throw $this->createNotFoundException("Invalid version");
+    }
+
+    $cacheId = 'files-' . $version;
+    if ($this->getCache()->contains($cacheId)) {
+      return $this->getCache()->fetch($cacheId);
+    }
+
+    /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
+    $gsu = $this->container->get('gsu');
+    $gsFiles = $gsu->getFiles('gs://civicrm/civicrm-stable/' . $version . '/');
+    $fmtFiles = [];
+    foreach ($gsFiles as $gsFile) {
+      $fmtFiles[] = basename($gsFile);
+    }
+    sort($fmtFiles);
+
+    $this->getCache()->save($cacheId, $fmtFiles, self::STANDARD_TTL);
+    return $fmtFiles;
+  }
+
+  /**
+   * @param string $version
+   * @return array
+   */
+  protected function getReleaseJson($version) {
+    if (!VersionUtil::isWellFormed($version)) {
+      throw $this->createNotFoundException("Invalid version");
+    }
+
+    $cacheId = 'json-' . $version;
+    if ($this->getCache()->contains($cacheId)) {
+      return $this->getCache()->fetch($cacheId);
+    }
+
+    /** @var \Google\Cloud\Storage\Bucket $bucket */
+    $bucket = $this->container->get('gcloud_release_bucket');
+    $name = "civicrm-stable/$version/civicrm-$version.json";
+    $rawJson = $bucket->object($name)->downloadAsString();
+    $parsedJson = json_decode($rawJson, TRUE);
+    if (!empty($rawJson) || empty($parsedJson)) {
+      $this->getCache()->save($cacheId, $parsedJson, self::STANDARD_TTL);
+      return $parsedJson;
+    }
+    else {
+      $placeholder = [];
+      $this->getCache()->save($cacheId, $placeholder, self::ERROR_TTL);
+      return $placeholder;
+    }
+  }
 
 }

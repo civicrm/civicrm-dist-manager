@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CiviCRM {{ version }}{% endblock %}
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    <fieldset>
+        <legend>Meta / TODO</legend>
+        <ul>
+            <li>Layout/stylize the sections of the page</li>
+            <li>Get nicer CSS for the release notes</li>
+            <li>Add some navigation for other versions</li>
+            <li>Incorporate branding from civicrm.org (or embed into civicrm.org)</li>
+        </ul>
+    </fieldset>
+
+    <fieldset>
+        <legend>Files</legend>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <a href="/{{ file }}">{{ file }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </fieldset>
+
+    <fieldset>
+        <legend>Build Info</legend>
+        <pre>{{ jsonDef | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+    </fieldset>
+
+    <fieldset>
+        <legend>Release Notes</legend>
+        <pre id="notes-unrendered" style="display: none">{{ notes }}</pre>
+        <div id="notes-rendered"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it@12/dist/markdown-it.min.js"></script>
+        <script type="application/javascript">
+          const notes = document.getElementById('notes-unrendered');
+          const md = window.markdownit({
+            html: true,
+            linkify: true,
+            typographer: true
+          });
+          const renderedHTML = md.render(notes.textContent);
+          document.getElementById('notes-rendered').innerHTML = renderedHTML;
+        </script>
+    </fieldset>
+
+{% endblock %}
