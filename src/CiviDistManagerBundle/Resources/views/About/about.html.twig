@@ -20,9 +20,9 @@
     <fieldset class="fs-summary">
         <legend>Summary</legend>
         <ul>
-            <li><strong>Version:</strong> {{ jsonDef.version }}</li>
-            <li><strong>Build ID:</strong> {{ jsonDef.rev }}</li>
-            <li><strong>Build Time:</strong> {{ jsonDef.timestamp.pretty }}</li>
+            <li><strong>Version:</strong> {{ version }}</li>
+            <li><strong>Build ID:</strong> {{ jsonDef.rev ?? 'unknown' }}</li>
+            <li><strong>Build Time:</strong> {{ jsonDef.timestamp.pretty ?? 'unknown' }}</li>
         </ul>
     </fieldset>
 
@@ -46,6 +46,7 @@
         <fieldset class="fs-details">
             <legend>Repositories</legend>
             <br/>
+            {% if jsonDef and jsonDef.git %}
             <table class="tbl-repos">
                 <tbody>
                 {% for repoName, repoDef in jsonDef.git %}
@@ -57,6 +58,9 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+                Failed to load metadata for {{ version }}.
+            {% endif %}
         </fieldset>
 
     </div>
