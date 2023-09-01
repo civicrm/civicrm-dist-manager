@@ -123,7 +123,7 @@ class BrowseController extends Controller {
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
       'jsonDef' => $jsonDef,
-      'gitBrowsers' => GitBrowsers::getAll(),
+      'gitBrowsers' => GitBrowsers::getAll('/commits'),
     ));
   }
 
