@@ -1,8 +1,57 @@
-table.upgrade-report th, table.upgrade-report td {
-  text-align: left;
-  vertical-align: top;
+html {
+  font-family: sans-serif;
+  font-size: 100%;
+  line-height: 1.4;
 }
-table.upgrade-report th {
+a {
+  color: #00969b;
+  text-decoration: none;
+}
+a:hover {
+  color: #007d82;
   text-decoration: underline;
 }
-
+body {
+  margin: 2rem;
+}
+pre {
+  font-family: monospace;
+  background: #fafafa;
+  padding: 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.25rem;
+}
+fieldset {
+  background: #f0f0f0;
+  border: 0 solid transparent;
+  padding: 2rem 2rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 80vw;
+  margin: 1rem auto;
+}
+legend {
+  position: relative;
+  font-weight: bold;
+  font-size: 1.4rem;
+  display: block;
+  top: 3rem;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  border-bottom: 4px solid #82c459;
+}
+table tbody strong {
+  color: #de447a;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+ul strong em {
+  font-style: inherit;
+  background-color: #64a13f;
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin: 0 5px 3px 0;
+  display: inline-block;
+  color: #fff;
+}
