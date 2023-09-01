@@ -4,17 +4,30 @@
 {% block stylesheets %}
 {% endblock %}
 
+{% block nav %}
+    [
+    <a href="https://civicrm.org/">CiviCRM Home</a>
+    &gt;
+    <a href="https://civicrm.org/download">Download</a>
+    &gt;
+    All Releases
+    ]
+{% endblock %}
+
 {% block body %}
 
-    <ul>
-        {% for majorMinor,patches in versions %}
-            <li>
-                <strong>{{ majorMinor }}</strong>:
-                {% for patch in patches %}
-                    <a href="/about/{{ patch }}{{ prototype ? "?prototype=1" : "" }}">{{ patch }}</a>{{ not loop.last ? ',' }}
-                {% endfor %}
-            </li>
-        {% endfor %}
-    </ul>
+    <fieldset class="fs-all-releases">
+        <legend>All Releases</legend>
+        <ul>
+            {% for majorMinor,patches in versions %}
+                <li>
+                    <strong>{{ majorMinor }}</strong>:
+                    {% for patch in patches %}
+                        <a href="/about/{{ patch }}{{ prototype ? "?prototype=1" : "" }}">{{ patch }}</a>{{ not loop.last ? ',' }}
+                    {% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </fieldset>
 
 {% endblock %}

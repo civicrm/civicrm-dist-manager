@@ -86,6 +86,8 @@ class CheckController extends Controller {
     $jsonDef = $buildRepo->fetchJsonDef($fileUrl);
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
+      'file' => basename(parse_url($fileUrl, PHP_URL_PATH)),
+      'fileUrl' => '/latest/' . $request->get('file'),
       'jsonDef' => $jsonDef,
       'gitBrowsers' => GitBrowsers::getAll('/commits'),
     ));

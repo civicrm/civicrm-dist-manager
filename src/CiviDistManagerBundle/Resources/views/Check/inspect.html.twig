@@ -1,35 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Downloads{% endblock %}
+{% block title %}Inspect: {{ jsonDef.version }}{% endblock %}
 {% block stylesheets %}
 {% endblock %}
 
 {% block body %}
-    <table>
-        <tbody>
-        <tr>
-            <td>Version</td>
-            <td>{{ jsonDef.version }}</td>
-        </tr>
-        <tr>
-            <td>Timestamp (Pretty)</td>
-            <td>{{ jsonDef.timestamp.pretty }}</td>
-        </tr>
-        <tr>
-            <td>Timestamp (Epoch)</td>
-            <td>{{ jsonDef.timestamp.epoch }}</td>
-        </tr>
+    <fieldset>
+        <legend><a href="{{ fileUrl }}">{{ file }} &#128196;</a></legend>
 
-        {% for repoName, repoDef in jsonDef.git %}
+        <table>
+            <tbody>
             <tr>
-                <td>{{ repoName }}</td>
-                <td><a href="{{ gitBrowsers[repoName] }}/{{ repoDef.commit }}/" target="_blank">
-                        {{ repoDef.commit }}
-                    </a></td>
+                <td>Version</td>
+                <td>{{ jsonDef.version }}</td>
             </tr>
-        {% endfor %}
+            <tr>
+                <td>Timestamp (Pretty)</td>
+                <td>{{ jsonDef.timestamp.pretty }}</td>
+            </tr>
+            <tr>
+                <td>Timestamp (Epoch)</td>
+                <td>{{ jsonDef.timestamp.epoch }}</td>
+            </tr>
 
-        </tbody>
-    </table>
+            {% for repoName, repoDef in jsonDef.git %}
+                <tr>
+                    <td>{{ repoName }}</td>
+                    <td><a href="{{ gitBrowsers[repoName] }}/{{ repoDef.commit }}/" target="_blank">
+                            {{ repoDef.commit }}
+                        </a></td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </fieldset>
 
 {% endblock %}

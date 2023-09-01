@@ -4,29 +4,43 @@
 {% block stylesheets %}
 {% endblock %}
 
+{% block nav %}
+    [
+    <a href="https://civicrm.org/">CiviCRM Home</a>
+    &gt;
+    <a href="https://civicrm.org/download">Download</a>
+    &gt;
+    Autobuild
+    ]
+{% endblock %}
+
 {% block body %}
-    <h1>Autobuild: Disclaimer</h1>
+    <fieldset class="fs-autobuild">
+        <legend>Autobuild</legend>
 
-    {{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
+        {{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
+    </fieldset>
 
-    <h1>Autobuild: Highlights</h1>
+    <fieldset class="fs-highlights">
+        <legend>Highlights</legend>
+        <ul>
+            {% for file in highlightFiles %}
+                <li><a href="{{ file.url }}">{{ file.basename }}</a> ({% if file.inspect_url is not empty %}
+                    <a href="{{ file.inspect_url }}">{{ file.rev }}</a>
+                    {% else %}
+                        {{ file.rev }}
+                    {% endif %})</li>
+            {% endfor %}
+        </ul>
+    </fieldset>
 
-    <ul>
-        {% for file in highlightFiles %}
-            <li><a href="{{ file.url }}">{{ file.basename }}</a> ({% if file.inspect_url is not empty %}
-                <a href="{{ file.inspect_url }}">{{ file.rev }}</a>
-                {% else %}
-                {{ file.rev }}
-                {% endif %})</li>
-        {% endfor %}
-    </ul>
-
-    <h1>Autobuild: Browse</h1>
-
-    <ul>
-        {% for branch, branchUrl in branches %}
-            <li><a href="{{ branchUrl }}">{{ branch }}</a></li>
-        {% endfor %}
-    </ul>
+    <fieldset class="fs-browse">
+        <legend>Browse</legend>
+        <ul>
+            {% for branch, branchUrl in branches %}
+                <li><a href="{{ branchUrl }}">branch/{{ branch }}</a></li>
+            {% endfor %}
+        </ul>
+    </fieldset>
 
 {% endblock %}

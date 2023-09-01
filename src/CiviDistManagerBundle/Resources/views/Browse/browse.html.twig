@@ -1,21 +1,46 @@
-<h1>Autobuild: Disclaimer</h1>
+{% extends 'base.html.twig' %}
 
-{{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
+{% block title %}Downloads{% endblock %}
+{% block stylesheets %}
+{% endblock %}
 
-<h1>Autobuild: Browse: <code>{{ targetBranch }}</code></h1>
+{% block nav %}
+    [
+    <a href="https://civicrm.org/">CiviCRM Home</a>
+    &gt;
+    <a href="https://civicrm.org/download">Download</a>
+    &gt;
+    <a href="/latest/">Autobuild</a>
+    &gt;
+    {{ targetBranch }}
+    ]
+{% endblock %}
 
-<ul>
-    {% for buildRec in byTimestamp %}
-        <li>{{ buildRec.ts }}
-            <ul>
-                {% for file in buildRec.files %}
-                    <li>
-                        <a href="{{ file._download_url }}">{{ file.basename }}</a>
-                        (<a href="{{ file._inspect_url }}">inspect</a>)
-                    </li>
-                {% endfor %}
-            </ul>
-        </li>
+{% block body %}
+    <fieldset class="fs-autobuild">
+        <legend>Autobuild</legend>
 
-    {% endfor %}
-</ul>
+        {{ include ('CiviDistManagerBundle:Check:disclaimer.html.twig') }}
+    </fieldset>
+
+    <fieldset class="fs-browse">
+        <legend>Browse: <code>{{ targetBranch }}</code></legend>
+
+        <ul>
+            {% for buildRec in byTimestamp %}
+                <li>{{ buildRec.ts }}
+                    <ul>
+                        {% for file in buildRec.files %}
+                            <li>
+                                <a href="{{ file._download_url }}">{{ file.basename }}</a>
+                                (<a href="{{ file._inspect_url }}">inspect</a>)
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+
+            {% endfor %}
+        </ul>
+    </fieldset>
+
+{% endblock %}

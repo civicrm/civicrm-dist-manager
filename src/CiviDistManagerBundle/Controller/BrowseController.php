@@ -122,6 +122,8 @@ class BrowseController extends Controller {
     $jsonDef = $buildRepo->fetchJsonDef($file['url']);
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
+      'file' => $file['basename'],
+      'fileUrl' => $file['url'],
       'jsonDef' => $jsonDef,
       'gitBrowsers' => GitBrowsers::getAll('/commits'),
     ));
