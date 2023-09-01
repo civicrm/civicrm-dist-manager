@@ -36,8 +36,8 @@ class AboutController extends Controller {
       throw $this->createNotFoundException("Invalid version");
     }
 
-    // If requested with "?next=1", then show the draft implementation of UI.
-    if ($request->get('prototype')) {
+    // If requested with "?prototype=1", then show the draft implementation of UI.
+    // if ($request->get('prototype')) {
       return $this->render('CiviDistManagerBundle:About:about.html.twig', [
         'version' => $version,
         'files' => $this->getReleaseFiles($version),
@@ -46,19 +46,19 @@ class AboutController extends Controller {
         'gitBrowsers' => GitBrowsers::getAll(),
         'prototype' => $request->get('prototype'),
       ]);
-    }
+    // }
 
-    $url = $this->pickRedirectUrl($version);
-    if ($url) {
-      return $this->redirect($url);
-    }
-    else {
-      $response = $this->render('CiviDistManagerBundle:About:unknown.html.twig', array(
-        'version' => $version,
-      ));
-      $response->setStatusCode(404);
-      return $response;
-    }
+    // $url = $this->pickRedirectUrl($version);
+    // if ($url) {
+    //   return $this->redirect($url);
+    // }
+    // else {
+    //   $response = $this->render('CiviDistManagerBundle:About:unknown.html.twig', array(
+    //     'version' => $version,
+    //   ));
+    //   $response->setStatusCode(404);
+    //   return $response;
+    // }
   }
 
   /**
