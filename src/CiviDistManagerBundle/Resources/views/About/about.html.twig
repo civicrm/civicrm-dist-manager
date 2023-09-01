@@ -35,18 +35,20 @@
         <legend>Release Notes</legend>
         <pre id="notes-unrendered" style="display: none">{{ notes }}</pre>
         <div id="notes-rendered"></div>
-
-        <script src="https://cdn.jsdelivr.net/npm/markdown-it@12/dist/markdown-it.min.js"></script>
-        <script type="application/javascript">
-          const notes = document.getElementById('notes-unrendered');
-          const md = window.markdownit({
-            html: true,
-            linkify: true,
-            typographer: true
-          });
-          const renderedHTML = md.render(notes.textContent);
-          document.getElementById('notes-rendered').innerHTML = renderedHTML;
-        </script>
     </fieldset>
 
+{% endblock %}
+
+{%  block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@12/dist/markdown-it.min.js"></script>
+    <script type="application/javascript">
+      const notes = document.getElementById('notes-unrendered');
+      const md = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true
+      });
+      const renderedHTML = md.render(notes.textContent);
+      document.getElementById('notes-rendered').innerHTML = renderedHTML;
+    </script>
 {% endblock %}
