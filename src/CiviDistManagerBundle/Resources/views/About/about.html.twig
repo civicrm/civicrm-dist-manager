@@ -6,9 +6,13 @@
 
 {% block nav %}
     [
-    <a href="https://civicrm.org/download">CiviCRM Download Home</a>
-    |
+    <a href="https://civicrm.org/">CiviCRM Home</a>
+    &gt;
+    <a href="https://civicrm.org/download">Download</a>
+    &gt;
     <a href="/about{{ prototype ? "?prototype=1" : "" }}">All Releases</a>
+    &gt;
+    {{ version }}
     ]
 {% endblock %}
 
