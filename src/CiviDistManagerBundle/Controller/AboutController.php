@@ -3,6 +3,7 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Version;
@@ -42,6 +43,8 @@ class AboutController extends Controller {
         'files' => $this->getReleaseFiles($version),
         'notes' => $this->getReleaseNotes($version),
         'jsonDef' => $this->getReleaseJson($version),
+        'gitBrowsers' => GitBrowsers::getAll(),
+        'prototype' => $request->get('prototype'),
       ]);
     }
 

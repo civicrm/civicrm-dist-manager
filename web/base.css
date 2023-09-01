@@ -21,6 +21,13 @@ pre {
   border: 1px solid #e5e5e5;
   border-radius: 0.25rem;
 }
+.two-col {
+  display: flex;
+  flex-wrap: wrap;
+}
+.two-col fieldset {
+  width: 30vw;
+}
 fieldset {
   background: #f0f0f0;
   border: 0 solid transparent;
@@ -39,7 +46,7 @@ legend {
   margin-bottom: 1rem;
   border-bottom: 4px solid #82c459;
 }
-table tbody strong {
+.fs-notes table tbody strong {
   color: #de447a;
 }
 ul {
