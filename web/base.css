@@ -55,3 +55,7 @@ ul strong em {
   display: inline-block;
   color: #fff;
 }
+
+div.navbar {
+  text-align: center;
+}
