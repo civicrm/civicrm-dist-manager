@@ -13,7 +13,7 @@ class AboutControllerTest extends WebTestCase {
   public function testGetWellformedResponses($version) {
     $client = static::createClient();
     $client->request('GET', '/about/' . $version, array());
-    $this->assertTrue($client->getResponse()->isRedirect());
+    $this->assertFalse($client->getResponse()->isRedirect());
     $this->assertRegexp(";$version;", $client->getResponse()->getContent());
   }
 

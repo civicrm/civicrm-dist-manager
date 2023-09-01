@@ -38,27 +38,24 @@ class AboutController extends Controller {
 
     // If requested with "?prototype=1", then show the draft implementation of UI.
     // if ($request->get('prototype')) {
+    $releaseFiles = $this->getReleaseFiles($version);
+    if (!empty($releaseFiles)) {
       return $this->render('CiviDistManagerBundle:About:about.html.twig', [
         'version' => $version,
-        'files' => $this->getReleaseFiles($version),
+        'files' => $releaseFiles,
         'notes' => $this->getReleaseNotes($version),
         'jsonDef' => $this->getReleaseJson($version),
         'gitBrowsers' => GitBrowsers::getAll(),
         'prototype' => $request->get('prototype'),
       ]);
-    // }
-
-    // $url = $this->pickRedirectUrl($version);
-    // if ($url) {
-    //   return $this->redirect($url);
-    // }
-    // else {
-    //   $response = $this->render('CiviDistManagerBundle:About:unknown.html.twig', array(
-    //     'version' => $version,
-    //   ));
-    //   $response->setStatusCode(404);
-    //   return $response;
-    // }
+    }
+    else {
+      $response = $this->render('CiviDistManagerBundle:About:unknown.html.twig', array(
+        'version' => $version,
+      ));
+      $response->setStatusCode(404);
+      return $response;
+    }
   }
 
   /**
