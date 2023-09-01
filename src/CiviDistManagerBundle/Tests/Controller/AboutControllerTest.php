@@ -12,7 +12,7 @@ class AboutControllerTest extends WebTestCase {
    */
   public function testGetWellformedResponses($version) {
     $client = static::createClient();
-    $client->request('GET', '/about/' . $version, array());
+    $client->request('GET', '/release/' . $version, array());
     $this->assertFalse($client->getResponse()->isRedirect());
     $this->assertRegexp(";$version;", $client->getResponse()->getContent());
   }
@@ -31,7 +31,7 @@ class AboutControllerTest extends WebTestCase {
    */
   public function testGetBadResponses($version) {
     $client = static::createClient();
-    $client->request('GET', '/about/' . $version, array());
+    $client->request('GET', '/release/' . $version, array());
     $this->assertTrue($client->getResponse()->getStatusCode() >= 400);
   }
 

@@ -100,6 +100,14 @@ For example:
  * `http://localhost/latest/branch/master/201801140252/civicrm-4.7.31-drupal-201801140252.tar.gz`
  * `http://localhost/latest/branch/4.6/201801140252/civicrm-4.6.35-wordpress-201801140252.zip`
 
+### Route: `GET /release/`
+
+Browse list of stable/public releases.
+
+### Route: `GET /release/{version}`
+
+Inspect a specific release.
+
 ### Route: `GET /esr/(.*)` (HTML or Redirect)
 
 Browse the extended security release folder.

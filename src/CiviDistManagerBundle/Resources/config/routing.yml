@@ -31,12 +31,12 @@ inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
     defaults: { _controller: CiviDistManagerBundle:Browse:inspect }
 
-about_list:
-    path:     /about/
+release_list:
+    path:     /release/
     defaults: { _controller: CiviDistManagerBundle:About:list }
 
-about_version:
-    path:     /about/{version}
+release_version:
+    path:     /release/{version}
     defaults: { _controller: CiviDistManagerBundle:About:view }
 
 esr_redir:

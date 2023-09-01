@@ -204,7 +204,7 @@ class AboutController extends Controller {
 
   /**
    * @return array
-   *   Ex: ['5.64' => ['5.64.1' => '/about/5.64.1']]
+   *   Ex: ['5.64' => ['5.64.1' => '/release/5.64.1']]
    */
   protected function getGroupedVersions() {
     $all = $this->getAllVersions();

@@ -23,7 +23,7 @@
                 <li>
                     <strong>{{ majorMinor }}</strong>:
                     {% for patch in patches %}
-                        <a href="/about/{{ patch }}{{ prototype ? "?prototype=1" : "" }}">{{ patch }}</a>{{ not loop.last ? ',' }}
+                        <a href="/release/{{ patch }}{{ prototype ? "?prototype=1" : "" }}">{{ patch }}</a>{{ not loop.last ? ',' }}
                     {% endfor %}
                 </li>
             {% endfor %}
