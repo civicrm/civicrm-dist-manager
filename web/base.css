@@ -63,6 +63,6 @@ ul strong em {
   color: #fff;
 }
 
-div.navbar {
+div.navbar, div.footer {
   text-align: center;
 }
