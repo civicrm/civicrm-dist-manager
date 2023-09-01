@@ -1,46 +1,47 @@
 # civicrm-dist-manager
 
-This application manages the `civicrm.org` distribution/download frontend
-service, including redirects and reporting.
+This application defines `download.civicrm.org`.
 
-### Basic Setup (*Option 1, nix-shell*)
+### Installation (*Option 1, nix-shell*)
 
-Install system requirements:
+__System requirements__:
 
-* [nix package manager](https://nixos.org/download)
+* git
+* [nix](https://nixos.org/download)
 
-Then:
+__Procedure__:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-dist-manager
 cd civicrm-dist-manager
-nix-shell
-composer install
+nix-shell                 ## Open subshell with key tools
+composer install          ## Download PHP libraries
 # Optional: If you don't want to use localhost:8000, then edit .loco/loco.yml.
-loco run
+loco run                  ## Start nginx and php-fpm
 ```
 
-(*You will still need `app/config/gcloud.json` -- described below*).
+(*You will also need `app/config/gcloud.json` -- described below.*)
 
-### Basic Setup (*Option 2, manual*)
+### Installation (*Option 2, manual*)
 
-Install system requirements:
+__System requirements__:
 
-* PHP 7.4
+* git
+* php 7.4
 * composer
 * nginx
 
-Then:
+__Procedure__:
 
 ```bash
 git clone https://github.com/civicrm/civicrm-dist-manager
 cd civicrm-dist-manager
-composer install
+composer install          ## Download PHP libraries
 ```
 
 Finally, add this new folder to your `nginx` configuration. See `nginx/site-example.conf` and `nginx/common.conf` for recommendations.
 
-(*You will still need `app/config/gcloud.json` -- described below*).
+(*You will also need `app/config/gcloud.json` -- described below.*)
 
 ### Google Cloud credentials
 
