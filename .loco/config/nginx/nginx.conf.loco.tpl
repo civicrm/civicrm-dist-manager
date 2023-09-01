@@ -28,15 +28,15 @@ http {
         location /esr {
             auth_basic           "CiviCRM Extended Security Release";
             auth_basic_user_file {{LOCO_PRJ}}/app/config/esr.htpasswd;
-            try_files $uri /app_dev.php$is_args$args;
+            try_files $uri /{{HTTPD_MAIN}}.php$is_args$args;
         }
 
         location / {
             # try to serve file directly, fallback to app.php
-            try_files $uri /app_dev.php$is_args$args;
+            try_files $uri /{{HTTPD_MAIN}}.php$is_args$args;
         }
 
-        location ~ ^/app_dev\.php(/|$) {
+        location ~ ^/app(_dev)?\.php(/|$) {
             alias {{HTTPD_ROOT}}/;
             fastcgi_pass {{LOCALHOST}}:{{PHPFPM_PORT}};
             fastcgi_split_path_info ^(.+\.php)(/.*)$;

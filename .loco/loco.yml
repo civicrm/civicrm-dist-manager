@@ -12,6 +12,8 @@ default_environment:
   - HTTPD_DOMAIN=localhost
   - HTTPD_PORT=8000
   - HTTPD_ROOT=$LOCO_PRJ/web
+  #- HTTPD_MAIN=app    ## Symfony debug+performance options disabled
+  - HTTPD_MAIN=app_dev ## Symfony debug+performance options enabled
 
   ## Configure other daemons. Most run on auxiliary/non-standard ports.
   - PHPFPM_PORT=9999
