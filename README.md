@@ -115,6 +115,14 @@ Browse the extended security release folder.
 Directories are displayed as HTML pages; files are provided as authenticated
 redirects.
 
+### Route: `GET /joomla.xml` (XML)
+### Route: `GET /joomla5.xml` (XML)
+
+XML feed of public/stable releases of `civicrm-*-joomla.zip` and
+`civicrm-*-joomla5.zip` (respectively).
+
+See also: https://docs.joomla.org/Deploying_an_Update_Server
+
 ### Route: `GET /check` (Web service)
 
 Use this end-point to check for metadata about an upgrade

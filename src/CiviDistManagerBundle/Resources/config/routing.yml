@@ -52,3 +52,11 @@ esr_path:
     defaults: { _controller: esr_controller:browseAction }
     requirements:
       path: .+
+
+joomla_xml:
+    path: /joomla.xml
+    defaults: { _controller: CiviDistManagerBundle:Joomla:index, suffix: "-joomla.zip" }
+
+joomla5_xml:
+    path: /joomla5.xml
+    defaults: { _controller: CiviDistManagerBundle:Joomla:index, suffix: "-joomla5.zip" }
