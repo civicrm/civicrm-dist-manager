@@ -180,6 +180,8 @@ class CheckController extends Controller {
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
         'Joomla' => sprintf('%s/%s/civicrm-%s-joomla.zip',
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
+        'Joomla5' => sprintf('%s/%s/civicrm-%s-joomla5.zip',
+          self::STABLE_DOWNLOAD_URL, $rev, $rev),
         // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
         'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
           self::STABLE_DOWNLOAD_URL, $rev, $rev),
