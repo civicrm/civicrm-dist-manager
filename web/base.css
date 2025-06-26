@@ -80,6 +80,9 @@ ul strong em {
   display: inline-block;
   color: #fff;
 }
+ul strong em a {
+  color: #fff;  
+}
 
 div.navbar, div.footer {
   text-align: center;
