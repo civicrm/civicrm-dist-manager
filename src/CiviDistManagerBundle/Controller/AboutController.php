@@ -2,15 +2,12 @@
 
 namespace CiviDistManagerBundle\Controller;
 
-use CiviDistManagerBundle\BuildRepository;
 use CiviDistManagerBundle\CacheTrait;
 use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Version;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Landing page for information about a particular version of CiviCRM.
@@ -65,9 +62,6 @@ class AboutController extends Controller {
    * @return string|NULL
    */
   protected function pickRedirectUrl($version) {
-    /**
-     * @var Cache
-     */
     $cache = $this->getCache();
     $cacheId = md5('exists' . $version);
 
@@ -149,7 +143,7 @@ class AboutController extends Controller {
         $fmtFiles[] = basename($gsFile);
       }
       sort($fmtFiles);
-      return$fmtFiles;
+      return $fmtFiles;
     }, []);
   }
 
@@ -192,7 +186,7 @@ class AboutController extends Controller {
         }
       }
       usort($versions, 'version_compare');
-      return$versions;
+      return $versions;
     }, []);
   }
 
