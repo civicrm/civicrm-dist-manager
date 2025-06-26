@@ -53,11 +53,13 @@
 
     </div>
 
+    {% if notes is defined %}
     <fieldset class="fs-notes">
         <legend>Release Notes</legend>
         <pre id="notes-unrendered" style="display: none">{{ notes }}</pre>
         <div id="notes-rendered"></div>
     </fieldset>
+    {% endif %}
 
 {% endblock %}
 
