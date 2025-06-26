@@ -136,16 +136,18 @@ class AboutController extends Controller {
 
   /**
    * @param string $version
+   *
    * @return string[]
-   *   List of file names.
-   *   Ex: ['civicrm-1.2.3-drupal.tar.gz', 'civicrm-1.2.3-wordpress.zip']
+   *   List of file names and their URLs.
+   *   Ex: [['basename' => 'civicrm-1.2.3-drupal.tar.gz', 'url' => 'https://....']]
    */
   protected function getReleaseFiles($version) {
     if (!VersionUtil::isWellFormed($version)) {
       throw $this->createNotFoundException("Invalid version");
     }
 
-    return static::cache("files-$version", function() use ($version) {
+    // $files = static::cache(NULL, function() use ($version) {
+    $files = static::cache("files-$version", function() use ($version) {
       /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
       $gsu = $this->container->get('gsu');
       $gsFiles = $gsu->getFiles('gs://civicrm/civicrm-stable/' . $version . '/');
@@ -156,6 +158,15 @@ class AboutController extends Controller {
       sort($fmtFiles);
       return $fmtFiles;
     }, []);
+
+    $result = [];
+    foreach ($files as $file) {
+      $result[] = [
+        'basename' => basename($file),
+        'url' => '/' . basename($file),
+      ];
+    }
+    return $result;
   }
 
   /**

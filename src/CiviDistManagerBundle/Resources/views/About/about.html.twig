@@ -25,7 +25,7 @@
             <ul>
                 {% for file in files %}
                     <li>
-                        <a href="/{{ file }}">{{ file }}</a>
+                        <a href="{{ file.url }}">{{ file.basename }}</a>
                     </li>
                 {% endfor %}
             </ul>
