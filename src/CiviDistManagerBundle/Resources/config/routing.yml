@@ -19,9 +19,21 @@ inspect_file:
     path:     /latest/{file}/inspect
     defaults: { _controller: CiviDistManagerBundle:Check:inspect }
 
-browse_branch:
+browse_branch_redir:
     path:     /latest/branch/{branch}
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+browse_branch:
+    path:     /latest/branch/{branch}/
     defaults: { _controller: CiviDistManagerBundle:Browse:browse }
+
+browse_branch_build_redir:
+    path:     /latest/branch/{branch}/{ts}
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+browse_branch_build:
+    path:     /latest/branch/{branch}/{ts}/
+    defaults: { _controller: CiviDistManagerBundle:Browse:view }
 
 download_branch_file:
     path:     /latest/branch/{branch}/{ts}/{basename}
@@ -29,7 +41,7 @@ download_branch_file:
 
 inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
-    defaults: { _controller: CiviDistManagerBundle:Browse:inspect }
+    defaults: { _controller: CiviDistManagerBundle:Redir:parent, levels: 2 }
 
 release_list:
     path:     /release/
