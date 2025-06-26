@@ -18,6 +18,11 @@ class AboutController extends Controller {
 
   public function listAction(Request $request) {
     return $this->render('CiviDistManagerBundle:About:list.html.twig', [
+      'breadcrumbs' => [
+        ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+        ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+        ['title' => 'All Releases'],
+      ],
       'versions' => array_reverse($this->getGroupedVersions()),
       'prototype' => $request->get('prototype'),
     ]);
@@ -39,6 +44,12 @@ class AboutController extends Controller {
     $releaseFiles = $this->getReleaseFiles($version);
     if (!empty($releaseFiles)) {
       return $this->render('CiviDistManagerBundle:About:about.html.twig', [
+        'breadcrumbs' => [
+          ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+          ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+          ['title' => 'All Releases', 'url' => '/release'],
+          ['title' => $version],
+        ],
         'version' => $version,
         'files' => $releaseFiles,
         'notes' => $this->getReleaseNotes($version),
