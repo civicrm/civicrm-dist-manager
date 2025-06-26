@@ -3,6 +3,7 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\CacheTrait;
 use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AboutController extends Controller {
 
-  const STANDARD_TTL = 3600, ERROR_TTL = 120;
+  use CacheTrait;
 
   public function listAction(Request $request) {
     return $this->render('CiviDistManagerBundle:About:list.html.twig', [
@@ -59,13 +60,6 @@ class AboutController extends Controller {
   }
 
   /**
-   * @return Cache
-   */
-  protected function getCache() {
-    return $this->container->get('civi_upgrade_manager.dist_cache');
-  }
-
-  /**
    * @param string $version
    *   Ex: '5.0.1'.
    * @return string|NULL
@@ -96,7 +90,7 @@ class AboutController extends Controller {
         }
       }
 
-      $cache->save($cacheId, $url, self::STANDARD_TTL);
+      $cache->save($cacheId, $url, $this->standardTtl);
     }
     return $cache->fetch($cacheId);
   }
@@ -213,38 +207,6 @@ class AboutController extends Controller {
       $result[VersionUtil::getMinor($version)][] = $version;
     }
     return $result;
-  }
-
-  /**
-   * Load some data from the cache - or else lookup the data (and store it
-   * in the cache).
-   *
-   * @param string $cacheId
-   * @param callable $callback
-   * @param null $placeholder
-   * @return mixed|null
-   */
-  protected function cache($cacheId, $callback, $placeholder = NULL) {
-    $cache = $this->getCache();
-    if ($cache->contains($cacheId)) {
-      return $cache->fetch($cacheId);
-    }
-
-    try {
-      $data = $callback();
-      $ttl = self::STANDARD_TTL;
-    }
-    catch (\Throwable $t) {
-      $data = $placeholder;
-      $ttl = self::ERROR_TTL;
-      $this->container->get('logger')->warning("Failed to populate cache item ({cacheId})", [
-        'cacheId' => $cacheId,
-        'exception' => $t,
-      ]);
-    }
-
-    $cache->save($cacheId, $data, $ttl);
-    return $data;
   }
 
 }
