@@ -16,6 +16,13 @@ class ReleaseController extends Controller {
 
   use CacheTrait;
 
+  /**
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   */
+  public function __construct($container) {
+    $this->setContainer($container);
+  }
+
   public function listAction(Request $request) {
     return $this->render('CiviDistManagerBundle:About:list.html.twig', [
       'breadcrumbs' => [

@@ -60,6 +60,11 @@ services:
     class: 'CiviDistManagerBundle\Controller\GenericGcloudController'
     arguments: ['@service_container', '@gsu', 'gs://civicrm-private/civicrm-esr', 'CiviCRM Extended Security Releases']
 
+  release_controller:
+    public: true
+    class: 'CiviDistManagerBundle\Controller\ReleaseController'
+    arguments: ['@service_container']
+
   app_twig_extension:
     class: '\CiviDistManagerBundle\TwigExtension'
     tags: [twig.extension]

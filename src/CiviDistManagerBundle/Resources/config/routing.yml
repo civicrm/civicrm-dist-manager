@@ -41,11 +41,11 @@ inspect_branch_build:
 
 release_list:
     path:     /release/
-    defaults: { _controller: CiviDistManagerBundle:Release:list }
+    defaults: { _controller: release_controller:listAction }
 
 release_version:
     path:     /release/{version}
-    defaults: { _controller: CiviDistManagerBundle:Release:view }
+    defaults: { _controller: release_controller:viewAction }
 
 esr_redir:
     path:     /esr
