@@ -10,7 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BrowseController extends Controller {
+/**
+ * Browse and inspect the auto-builds.
+ */
+class AutoBuildController extends Controller {
 
   use CacheTrait;
 

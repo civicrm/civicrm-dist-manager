@@ -25,7 +25,7 @@ browse_branch_redir:
 
 browse_branch:
     path:     /latest/branch/{branch}/
-    defaults: { _controller: CiviDistManagerBundle:Browse:browse }
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:browse }
 
 browse_branch_build_redir:
     path:     /latest/branch/{branch}/{ts}
@@ -33,11 +33,11 @@ browse_branch_build_redir:
 
 browse_branch_build:
     path:     /latest/branch/{branch}/{ts}/
-    defaults: { _controller: CiviDistManagerBundle:Browse:view }
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:view }
 
 download_branch_file:
     path:     /latest/branch/{branch}/{ts}/{basename}
-    defaults: { _controller: CiviDistManagerBundle:Browse:download }
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:download }
 
 inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
