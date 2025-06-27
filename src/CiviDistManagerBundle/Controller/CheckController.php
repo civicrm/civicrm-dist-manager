@@ -75,7 +75,7 @@ class CheckController extends Controller {
   }
 
   private function findRevByFilename($file) {
-    if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-(stable|rc|nightly)-;i', $file, $matches)) {
       return array('rev' => NULL, 'message' => 'Unrecognized stability or CMS');
     }
     $stability = strtolower($matches[1]);
@@ -103,7 +103,7 @@ class CheckController extends Controller {
 
   /**
    * @param string $file
-   *   Ex: '/var/foo/civicrm-46NIGHTLY-drupal.tar.gz'
+   *   Ex: '/var/foo/civicrm-NIGHTLY-drupal.tar.gz'
    *   Ex: 'http://example.org/civicrm-4.7.30-wordpress-201801010101.zip'
    * @return string|NULL
    *   Ex: 'drupal.tar.gz'.
@@ -111,7 +111,7 @@ class CheckController extends Controller {
    */
   private function parseFileExt($file) {
     $file = basename($file);
-    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-([0-9\.]|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
       return NULL;
     }
     $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
@@ -223,7 +223,7 @@ class CheckController extends Controller {
    * Given a target stability level, find the latest matching RevDoc.
    *
    * @param string $stability
-   *   Ex: 'rc', 'stable', 'nightly', '46nightly'.
+   *   Ex: 'rc', 'stable', 'nightly'
    * @return array
    *   RevDoc
    *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
@@ -243,12 +243,6 @@ class CheckController extends Controller {
       case 'nightly':
         $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
           return $rev['branch'] === 'master';
-        });
-        break;
-
-      case '46nightly':
-        $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
-          return $rev['branch'] === '4.6';
         });
         break;
 
