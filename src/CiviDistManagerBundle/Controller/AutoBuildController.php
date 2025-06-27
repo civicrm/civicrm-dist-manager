@@ -3,7 +3,6 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
-use CiviDistManagerBundle\CacheTrait;
 use CiviDistManagerBundle\GitBrowsers;
 use Google\Cloud\Core\Timestamp;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,8 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
  * Browse and inspect the auto-builds.
  */
 class AutoBuildController extends Controller {
-
-  use CacheTrait;
 
   public function __construct() {
     $this->standardTtl = 120;
@@ -75,6 +72,9 @@ class AutoBuildController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response|null
    */
   public function viewAction(Request $request, $branch, $ts) {
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+
     if (!$this->isWellFormedBranch($branch)) {
       throw $this->createNotFoundException("Invalid branch");
     }
@@ -95,7 +95,7 @@ class AutoBuildController extends Controller {
     }
 
     if (!empty($releaseFiles)) {
-      $json = $this->getReleaseJson($branch, $ts, $jsonFile);
+      $json = $buildRepo->fetchJsonFile("$branch/$jsonFile");
       return $this->render('CiviDistManagerBundle:About:about.html.twig', [
         'breadcrumbs' => [
           ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
@@ -157,24 +157,9 @@ class AutoBuildController extends Controller {
   }
 
   protected function getFolders(string $branch): array {
-    $files = static::cache("autobuild-list-$branch", function() use ($branch) {
-      /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
-      $gsu = $this->container->get('gsu');
-      $gsFiles = $gsu->getFiles('gs://civicrm-build/' . $branch . '/');
-      $jsonFiles = preg_grep(';\.json$;', $gsFiles);
-      asort($jsonFiles);
-      return $jsonFiles;
-    }, []);
-
-    $result = [];
-    foreach ($files as $file => $uri) {
-      if (preg_match(';-(\d+).json$;', $file, $m)) {
-        $result[] = $m[1];
-      }
-    }
-    sort($result);
-
-    return $result;
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+    return $buildRepo->getOptions('ts', fn($f) => $f['branch'] === $branch);
   }
 
   protected function getLatest(string $branch): string {
@@ -192,26 +177,15 @@ class AutoBuildController extends Controller {
    *   Ex: [['basename' => 'civicrm-1.2.3-drupal.tar.gz', 'url' => 'https://....']]
    */
   protected function getReleaseFiles($branch, $ts) {
-    // $files = static::cache(NULL, function() use ($branch, $ts) {
-    $files = static::cache("autobuild-files-$branch-$ts", function() use ($branch, $ts) {
-      /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
-      $gsu = $this->container->get('gsu');
-      $gsFiles = $gsu->getFiles('gs://civicrm-build/' . $branch . '/');
-      $fmtFiles = [];
-      foreach ($gsFiles as $gsFile) {
-        if (strpos(basename($gsFile), '-' . $ts)) {
-          $fmtFiles[] = $gsFile;
-        }
-      }
-      asort($fmtFiles);
-      return $fmtFiles;
-    }, []);
+    /** @var BuildRepository $buildRepo */
+    $buildRepo = $this->container->get('build_repository');
+    $files = $buildRepo->findFilesByFilter(fn($f) => $f['branch'] === $branch && $f['ts'] === $ts);
 
     $result = [];
     foreach ($files as $file) {
       $result[] = [
-        'basename' => basename($file),
-        'url' => basename($file),
+        'basename' => $file['basename'],
+        'url' => $file['basename'],
       ];
     }
     return $result;
@@ -228,27 +202,6 @@ class AutoBuildController extends Controller {
       }
     }
     return $files;
-  }
-
-  /**
-   * @param string $branch
-   * @param string $ts
-   * @param string $jsonFile
-   * @return array
-   */
-  protected function getReleaseJson($branch, $ts, $jsonFile) {
-    // return static::cache(NULL, function() use ($branch, $ts, $jsonFile) {
-    return static::cache("autobuild-json-$branch-$ts-$jsonFile", function() use ($branch, $ts, $jsonFile) {
-      /** @var \Google\Cloud\Storage\Bucket $bucket */
-      $bucket = $this->container->get('gcloud_build_bucket');
-      $name = "$branch/$jsonFile";
-      $rawJson = $bucket->object($name)->downloadAsString();
-      $parsedJson = json_decode($rawJson, TRUE);
-      if (empty($rawJson) || empty($parsedJson)) {
-        throw new \Exception("JSON file ($name) had no valid JSON data");
-      }
-      return $parsedJson;
-    }, []);
   }
 
   /**
