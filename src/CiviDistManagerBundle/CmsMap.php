@@ -17,6 +17,8 @@ class CmsMap {
       'wporg' => 'WordPress',
       'joomla' => 'Joomla',
       'joomla-alt' => 'Joomla',
+      'joomla5' => 'Joomla5',
+      'joomla5bc' => 'Joomla5BC',
       'l10n' => 'L10n',
       'standalone' => 'Standalone',
       'starterkit' => 'Drupal',
