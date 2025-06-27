@@ -70,29 +70,6 @@ class CheckController extends Controller {
     }
   }
 
-  /**
-   * View the build report for the file
-   *
-   * Ex: "GET /latest/civicrm-NIGHTLY-joomla.zip".
-
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-   */
-  public function inspectAction(Request $request) {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-
-    $fileUrl = $this->findDownloadUrl($request->get('file'));
-    $jsonDef = $buildRepo->fetchJsonDefByTarFile($fileUrl);
-
-    return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
-      'file' => basename(parse_url($fileUrl, PHP_URL_PATH)),
-      'fileUrl' => '/latest/' . $request->get('file'),
-      'jsonDef' => $jsonDef,
-      'gitBrowsers' => GitBrowsers::getAll('/commits'),
-    ));
-  }
-
   private function findRevByFilename($file) {
     if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-;i', $file, $matches)) {
       return array('rev' => NULL, 'message' => 'Unrecognized stability or CMS');
@@ -338,9 +315,11 @@ class CheckController extends Controller {
         );
 
         if (strpos($revDoc['rev'], '-') !== FALSE) {
-          $highlightFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
-            'file' => $basename,
-          ));
+          [, $ts] = explode('-', $revDoc['rev']);
+          $highlightFiles[$basename]['inspect_url'] = $this->generateUrl('browse_branch_build', [
+            'branch' => $revDoc['branch'],
+            'ts' => $ts,
+          ]);
         }
       }
     }
