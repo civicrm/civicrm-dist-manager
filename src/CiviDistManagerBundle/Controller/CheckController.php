@@ -3,8 +3,6 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
-use CiviDistManagerBundle\GitBrowsers;
-use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,7 +47,7 @@ class CheckController extends Controller {
         ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
         ['title' => 'Autobuild'],
       ],
-      'highlightFiles' => $this->findHighlights(),
+      'highlights' => $this->findHighlights(),
       'branches' => $this->findBranchUrls(),
     ));
   }
@@ -296,39 +294,56 @@ class CheckController extends Controller {
    */
   protected function findHighlights() {
     $highlightFiles = array();
-    $revDocs = array(
-      'STABLE' => $this->findRevByStability('stable'),
-      'RC' => $this->findRevByStability('rc'),
-      'NIGHTLY' => $this->findRevByStability('nightly'),
-      '46NIGHTLY' => $this->findRevByStability('46nightly'),
-    );
-    foreach ($revDocs as $stability => $revDoc) {
-      if ($revDoc === NULL) {
-        continue;
+    $highlights = [
+      'STABLE' => [
+        'title' => 'Stable',
+        'revDoc' => $this->findRevByStability('stable'),
+        'inspect_url' => NULL,
+      ],
+      'RC' => [
+        'title' => 'Release Candidate',
+        'revDoc' => $this->findRevByStability('rc'),
+        'inspect_url' => NULL,
+      ],
+      'NIGHTLY' => [
+        'title' => 'Development',
+        'revDoc' => $this->findRevByStability('nightly'),
+        'inspect_url' => NULL,
+      ],
+    ];
+    $highlights = array_filter($highlights, fn($r) => !empty($r['revDoc']));
+    foreach ($highlights as $stability => &$highlight) {
+      $revDoc = $highlight['revDoc'];
+
+      if (strpos($revDoc['rev'], '-') !== FALSE) {
+        [, $ts] = explode('-', $revDoc['rev']);
+        $highlight['inspect_url'] = $this->generateUrl('browse_branch_build', [
+          'branch' => $revDoc['branch'],
+          'ts' => $ts,
+        ]);
       }
+      else {
+        $highlight['inspect_url'] = $this->generateUrl('release_version', [
+          'version' => $revDoc['version'],
+        ]);
+      }
+
+      $files = [];
       foreach ($revDoc['tar'] as $url) {
         $fileExt = $this->parseFileExt($url);
         $basename = "civicrm-$stability-$fileExt";
-
-        $highlightFiles[$basename] = array(
+        $files[$basename] = $highlightFiles[$basename] = array(
           'rev' => $revDoc['rev'],
           'basename' => $basename,
           'url' => $this->generateUrl('download_file', array(
             'file' => $basename,
           )),
-          'inspect_url' => NULL,
         );
-
-        if (strpos($revDoc['rev'], '-') !== FALSE) {
-          [, $ts] = explode('-', $revDoc['rev']);
-          $highlightFiles[$basename]['inspect_url'] = $this->generateUrl('browse_branch_build', [
-            'branch' => $revDoc['branch'],
-            'ts' => $ts,
-          ]);
-        }
       }
+      $highlight['files'] = $files;
     }
-    return $highlightFiles;
+
+    return $highlights;
   }
 
   /**
