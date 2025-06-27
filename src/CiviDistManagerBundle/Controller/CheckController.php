@@ -83,7 +83,7 @@ class CheckController extends Controller {
     $buildRepo = $this->container->get('build_repository');
 
     $fileUrl = $this->findDownloadUrl($request->get('file'));
-    $jsonDef = $buildRepo->fetchJsonDef($fileUrl);
+    $jsonDef = $buildRepo->fetchJsonDefByTarFile($fileUrl);
 
     return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
       'file' => basename(parse_url($fileUrl, PHP_URL_PATH)),

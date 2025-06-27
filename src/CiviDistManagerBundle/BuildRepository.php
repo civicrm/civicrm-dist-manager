@@ -158,7 +158,7 @@ class BuildRepository {
    * @return array
    * @throws \Exception
    */
-  public function fetchJsonDef($tarFileUrl) {
+  public function fetchJsonDefByTarFile($tarFileUrl) {
     if (!preg_match(';/([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable|-alt)?-(\d+)\.(tar.gz|zip|tgz)(\?.*)?$;', $tarFileUrl, $matches)) {
       throw new \Exception("Failed to determine JSON metadata URL");
     }
