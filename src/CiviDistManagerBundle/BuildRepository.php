@@ -1,6 +1,7 @@
 <?php
 
 namespace CiviDistManagerBundle;
+
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -163,13 +164,34 @@ class BuildRepository {
       throw new \Exception("Failed to determine JSON metadata URL");
     }
 
-    list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
-    $jsonPath = "$branch/civicrm-$version-$ts.json";
-    if (!$this->cache->contains($jsonPath)) {
-      $content = $this->bucket->object($jsonPath)->downloadAsString();
-      $this->cache->save($jsonPath, $content, self::CACHE_TTL);
+    [$full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext] = $matches;
+    return $this->fetchJsonFile("$branch/civicrm-$version-$ts.json");
+  }
+
+  /**
+   * @param string $jsonPath
+   * @return mixed
+   *   Parsed content of the JSON file.
+   */
+  public function fetchJsonFile(string $jsonPath) {
+    $rawJson = $this->fetchFile($jsonPath);
+    $parsedJson = json_decode($rawJson, TRUE);
+    if (empty($rawJson) || empty($parsedJson)) {
+      throw new \Exception("JSON file ($name) had no valid JSON data");
     }
-    return json_decode($this->cache->fetch($jsonPath), TRUE);
+    return $parsedJson;
+  }
+
+  /**
+   * @param string $relPath
+   * @return string
+   */
+  public function fetchFile(string $relPath) {
+    if (!$this->cache->contains($relPath)) {
+      $content = $this->bucket->object($relPath)->downloadAsString();
+      $this->cache->save($relPath, $content, self::CACHE_TTL);
+    }
+    return $this->cache->fetch($relPath);
   }
 
   /**
@@ -220,22 +242,36 @@ class BuildRepository {
     $result = NULL;
     if (preg_match(';^([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-([a-zA-Z0-9]+)(-unstable|-alt)?-(\d+)\.(tar.gz|zip|tgz)$;', $file, $matches)) {
       $cmsMap = CmsMap::getMap();
-      list ($full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext) = $matches;
+      [$full, $branch, $version, $ign, $cmsFile, $ignore2, $ts, $ext] = $matches;
       $tsEpoch = $this->parseTimestamp($ts);
-      if (isset($cmsMap[$cmsFile])) {
-        $result = array(
-          'file' => $file,
-          'basename' => basename($file),
-          'url' => $this->getUrl($file),
-          'branch' => $branch,
-          'version' => $version,
-          'rev' => "$version-$ts",
-          'uf' => $cmsMap[$cmsFile],
-          'ts' => $ts,
-          'timestamp' => $tsEpoch,
-          'bucket' => $this->bucket->name(),
-        );
-      }
+      $result = [
+        'file' => $file,
+        'basename' => basename($file),
+        'url' => $this->getUrl($file),
+        'branch' => $branch,
+        'version' => $version,
+        'rev' => "$version-$ts",
+        'uf' => $cmsMap[$cmsFile] ?? 'Unknown',
+        'ts' => $ts,
+        'timestamp' => $tsEpoch,
+        'bucket' => $this->bucket->name(),
+      ];
+    }
+    elseif (preg_match(';^([0-9a-zA-Z\.\-]+)/civicrm-([0-9\.]+(alpha|beta)?[0-9]*)-(\d+)\.json$;', $file, $matches)) {
+      [$full, $branch, $version, $ign, $ts] = $matches;
+      $tsEpoch = $this->parseTimestamp($ts);
+      $result = [
+        'file' => $file,
+        'basename' => basename($file),
+        'url' => $this->getUrl($file),
+        'branch' => $branch,
+        'version' => $version,
+        'rev' => "$version-$ts",
+        'uf' => 'JSON',
+        'ts' => $ts,
+        'timestamp' => $tsEpoch,
+        'bucket' => $this->bucket->name(),
+      ];
     }
     return $result;
   }
