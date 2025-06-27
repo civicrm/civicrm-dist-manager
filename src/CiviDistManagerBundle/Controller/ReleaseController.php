@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Landing page for information about a particular version of CiviCRM.
  */
-class AboutController extends Controller {
+class ReleaseController extends Controller {
 
   use CacheTrait;
 
