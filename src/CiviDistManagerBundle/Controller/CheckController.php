@@ -3,6 +3,7 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -145,43 +146,26 @@ class CheckController extends Controller {
       }
     }
 
-    $backdropFile = version_compare('4.7.20', $rev, '<=')
-      ? 'backdrop' : 'backdrop-unstable';
+    /**
+     * @var \CiviDistManagerBundle\Controller\ReleaseController
+     */
+    $release = $this->container->get('release_controller');
+    $result = $release->getReleaseJson($rev);
+    $result['rev'] = $result['version']; /* Blessed! */
+    if (VersionUtil::isBetween('6.0', '<', $rev, '<', '6.5')) {
+      if (!isset($result['tar']['Standalone'])) {
+        // Ugh. Before 6.5, 'Standalone' was missing from metadata. Remove after 2026 Q1.
+        $result['tar']['Standalone'] = str_replace('-drupal.tar', '-standalone.tar', $result['tar']['Drupal']);
+      }
+      ksort($result['tar']);
+    }
+    foreach ($result['tar'] as &$releaseItem) {
+      // Ugh. Between 4.7.20-6.4.x, the JSON incorrectly identified the name of the Backdrop file. Remove hack after 2026 Q1.
+      $releaseItem = str_replace('backdrop-unstable', 'backdrop', $releaseItem);
 
-    return array(
-      'version' => $rev,
-      'rev' => $rev,
-      'tar' => array(
-        'Backdrop' => sprintf('%s/%s/civicrm-%s-%s.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev, $backdropFile),
-        'Drupal' => sprintf('%s/%s/civicrm-%s-drupal.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Drupal6' => sprintf('%s/%s/civicrm-%s-drupal6.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Joomla' => sprintf('%s/%s/civicrm-%s-joomla.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Joomla5' => sprintf('%s/%s/civicrm-%s-joomla5.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
-        'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Standalone' => sprintf('%s/%s/civicrm-%s-standalone.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'WordPress' => sprintf('%s/%s/civicrm-%s-wordpress.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-      ),
-      'git' => array(
-        'civicrm-core' => array('commit' => $rev),
-        'civicrm-joomla' => array('commit' => $rev),
-        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
-        'civicrm-packages' => array('commit' => $rev),
-        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
-        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
-        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
-        'civicrm-standalone' => array('commit' => $rev),
-        'civicrm-wordpress' => array('commit' => $rev),
-      ),
-    );
+      $releaseItem = self::STABLE_DOWNLOAD_URL . '/' . $rev . '/' . $releaseItem;
+    }
+    return $result;
   }
 
   /**

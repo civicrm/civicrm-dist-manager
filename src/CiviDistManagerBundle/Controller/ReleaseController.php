@@ -5,7 +5,6 @@ namespace CiviDistManagerBundle\Controller;
 use CiviDistManagerBundle\CacheTrait;
 use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
-use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,6 +38,7 @@ class ReleaseController extends Controller {
    * Landing page for information about a particular version of CiviCRM.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $version
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
   public function viewAction(Request $request, $version) {
@@ -180,7 +180,7 @@ class ReleaseController extends Controller {
    * @param string $version
    * @return array
    */
-  protected function getReleaseJson($version) {
+  public function getReleaseJson($version) {
     if (!VersionUtil::isWellFormed($version)) {
       throw $this->createNotFoundException("Invalid version");
     }
