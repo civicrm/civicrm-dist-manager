@@ -53,8 +53,13 @@ class BuildRepository {
     $this->cache = $cache;
   }
 
-  public function getFile($filters) {
-    $matches = $this->getFilesByFilter($filters);
+  /**
+   * @param callable $filter
+   *   function(array $file): bool
+   * @return mixed|null
+   */
+  public function findFile($filter): ?array {
+    $matches = $this->findFilesByFilter($filter);
     if (count($matches) === 0) {
       return NULL;
     }
@@ -91,17 +96,14 @@ class BuildRepository {
   }
 
   /**
-   * @param array $filters
+   * @param callable $filter
+   *   function(array $file): bool
    * @return array
    */
-  public function getFilesByFilter($filters) {
+  public function findFilesByFilter($filter): array {
     $matches = array();
     foreach ($this->getFiles() as $file) {
-      $match = TRUE;
-      foreach ($filters as $filterKey => $filterValue) {
-        $match = $match && ($file[$filterKey] === $filterValue);
-      }
-      if ($match) {
+      if ($filter($file)) {
         $matches[] = $file;
       }
     }

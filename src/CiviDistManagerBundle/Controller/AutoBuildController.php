@@ -147,10 +147,7 @@ class AutoBuildController extends Controller {
       $file = isset($files[0]) ? $files[0] : NULL;
     }
     else {
-      $file = $buildRepo->getFile([
-        'branch' => $branch,
-        'basename' => $basename,
-      ]);
+      $file = $buildRepo->findFile(fn($f) => $f['branch'] == $branch && $f['basename'] == $basename);
     }
 
     if (!$file) {
