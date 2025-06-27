@@ -44,6 +44,11 @@ class CheckController extends Controller {
    */
   public function downloadListAction(Request $request) {
     return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
+      'breadcrumbs' => [
+        ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+        ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+        ['title' => 'Autobuild'],
+      ],
       'highlightFiles' => $this->findHighlights(),
       'branches' => $this->findBranchUrls(),
     ));
