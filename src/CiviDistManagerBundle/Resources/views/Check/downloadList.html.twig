@@ -4,16 +4,6 @@
 {% block stylesheets %}
 {% endblock %}
 
-{% block nav %}
-    [
-    <a href="https://civicrm.org/">CiviCRM Home</a>
-    &gt;
-    <a href="https://civicrm.org/download">Download</a>
-    &gt;
-    Autobuild
-    ]
-{% endblock %}
-
 {% block body %}
     <fieldset class="fs-autobuild">
         <legend>Autobuild</legend>
@@ -24,13 +14,25 @@
     <fieldset class="fs-highlights">
         <legend>Highlights</legend>
         <ul>
-            {% for file in highlightFiles %}
-                <li><a href="{{ file.url }}">{{ file.basename }}</a> ({% if file.inspect_url is not empty %}
-                    <a href="{{ file.inspect_url }}">{{ file.rev }}</a>
-                    {% else %}
-                        {{ file.rev }}
-                    {% endif %})</li>
+            {% for highlight in highlights %}
+                <li>
+                    <h4>
+                        {{ highlight.title }}
+                        {% if highlight.inspect_url is not empty %}
+                            (<a href="{{ highlight.inspect_url }}">{{ highlight.revDoc.rev }}</a>)
+                        {% else %}
+                            ({{ highlight.revDoc.rev }})
+                        {% endif %}
+                    </h4>
+
+                    <ul>
+                        {% for file in highlight.files %}
+                            <li><a href="{{ file.url }}">{{ file.basename }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
             {% endfor %}
+
         </ul>
     </fieldset>
 

@@ -25,4 +25,15 @@ class RedirController extends Controller {
     return $this->redirect($request->getRequestUri() . $suffix);
   }
 
+  /**
+   * Redirect to the parent folder.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param int $levels
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   */
+  public function parentAction(Request $request, $levels = 1) {
+    return $this->redirect(dirname($request->getRequestUri(), $levels));
+  }
+
 }

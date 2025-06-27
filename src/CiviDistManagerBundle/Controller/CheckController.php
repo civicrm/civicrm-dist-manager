@@ -3,7 +3,6 @@
 namespace CiviDistManagerBundle\Controller;
 
 use CiviDistManagerBundle\BuildRepository;
-use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -44,7 +43,12 @@ class CheckController extends Controller {
    */
   public function downloadListAction(Request $request) {
     return $this->render('CiviDistManagerBundle:Check:downloadList.html.twig', array(
-      'highlightFiles' => $this->findHighlights(),
+      'breadcrumbs' => [
+        ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+        ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+        ['title' => 'Autobuild'],
+      ],
+      'highlights' => $this->findHighlights(),
       'branches' => $this->findBranchUrls(),
     ));
   }
@@ -70,31 +74,8 @@ class CheckController extends Controller {
     }
   }
 
-  /**
-   * View the build report for the file
-   *
-   * Ex: "GET /latest/civicrm-NIGHTLY-joomla.zip".
-
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-   */
-  public function inspectAction(Request $request) {
-    /** @var BuildRepository $buildRepo */
-    $buildRepo = $this->container->get('build_repository');
-
-    $fileUrl = $this->findDownloadUrl($request->get('file'));
-    $jsonDef = $buildRepo->fetchJsonDef($fileUrl);
-
-    return $this->render('CiviDistManagerBundle:Check:inspect.html.twig', array(
-      'file' => basename(parse_url($fileUrl, PHP_URL_PATH)),
-      'fileUrl' => '/latest/' . $request->get('file'),
-      'jsonDef' => $jsonDef,
-      'gitBrowsers' => GitBrowsers::getAll('/commits'),
-    ));
-  }
-
   private function findRevByFilename($file) {
-    if (!preg_match(';^civicrm-(46nightly|stable|rc|nightly)-;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-(stable|rc|nightly)-;i', $file, $matches)) {
       return array('rev' => NULL, 'message' => 'Unrecognized stability or CMS');
     }
     $stability = strtolower($matches[1]);
@@ -122,7 +103,7 @@ class CheckController extends Controller {
 
   /**
    * @param string $file
-   *   Ex: '/var/foo/civicrm-46NIGHTLY-drupal.tar.gz'
+   *   Ex: '/var/foo/civicrm-NIGHTLY-drupal.tar.gz'
    *   Ex: 'http://example.org/civicrm-4.7.30-wordpress-201801010101.zip'
    * @return string|NULL
    *   Ex: 'drupal.tar.gz'.
@@ -130,7 +111,7 @@ class CheckController extends Controller {
    */
   private function parseFileExt($file) {
     $file = basename($file);
-    if (!preg_match(';^civicrm-([0-9\.]|46nightly|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
+    if (!preg_match(';^civicrm-([0-9\.]|stable|rc|nightly|alpha|beta)+-([a-zA-Z0-9\-_]+)\.(zip|tar.gz|tgz|json)(\?.*)?$;i', $file, $matches)) {
       return NULL;
     }
     $middle = preg_replace(';(-\d+)$;', '', $matches[2]);
@@ -165,41 +146,26 @@ class CheckController extends Controller {
       }
     }
 
-    $backdropFile = version_compare('4.7.20', $rev, '<=')
-      ? 'backdrop' : 'backdrop-unstable';
+    /**
+     * @var \CiviDistManagerBundle\Controller\ReleaseController
+     */
+    $release = $this->container->get('release_controller');
+    $result = $release->getReleaseJson($rev);
+    $result['rev'] = $result['version']; /* Blessed! */
+    if (VersionUtil::isBetween('6.0', '<', $rev, '<', '6.5')) {
+      if (!isset($result['tar']['Standalone'])) {
+        // Ugh. Before 6.5, 'Standalone' was missing from metadata. Remove after 2026 Q1.
+        $result['tar']['Standalone'] = str_replace('-drupal.tar', '-standalone.tar', $result['tar']['Drupal']);
+      }
+      ksort($result['tar']);
+    }
+    foreach ($result['tar'] as &$releaseItem) {
+      // Ugh. Between 4.7.20-6.4.x, the JSON incorrectly identified the name of the Backdrop file. Remove hack after 2026 Q1.
+      $releaseItem = str_replace('backdrop-unstable', 'backdrop', $releaseItem);
 
-    return array(
-      'version' => $rev,
-      'rev' => $rev,
-      'tar' => array(
-        'Backdrop' => sprintf('%s/%s/civicrm-%s-%s.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev, $backdropFile),
-        'Drupal' => sprintf('%s/%s/civicrm-%s-drupal.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Drupal6' => sprintf('%s/%s/civicrm-%s-drupal6.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Joomla' => sprintf('%s/%s/civicrm-%s-joomla.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        // 'Joomla-Alt' => 'https://download.civicrm.org/civicrm-4.7.12-joomla-alt.zip',
-        'L10n' => sprintf('%s/%s/civicrm-%s-l10n.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'Standalone' => sprintf('%s/%s/civicrm-%s-standalone.tar.gz',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-        'WordPress' => sprintf('%s/%s/civicrm-%s-wordpress.zip',
-          self::STABLE_DOWNLOAD_URL, $rev, $rev),
-      ),
-      'git' => array(
-        'civicrm-core' => array('commit' => $rev),
-        'civicrm-joomla' => array('commit' => $rev),
-        'civicrm-backdrop@1.x' => array('commit' => "1.x-$rev"),
-        'civicrm-packages' => array('commit' => $rev),
-        'civicrm-drupal@6.x' => array('commit' => "6.x-$rev"),
-        'civicrm-drupal@7.x' => array('commit' => "7.x-$rev"),
-        'civicrm-drupal@8.x' => array('commit' => "8.x-$rev"),
-        'civicrm-standalone' => array('commit' => $rev),
-        'civicrm-wordpress' => array('commit' => $rev),
-      ),
-    );
+      $releaseItem = self::STABLE_DOWNLOAD_URL . '/' . $rev . '/' . $releaseItem;
+    }
+    return $result;
   }
 
   /**
@@ -257,7 +223,7 @@ class CheckController extends Controller {
    * Given a target stability level, find the latest matching RevDoc.
    *
    * @param string $stability
-   *   Ex: 'rc', 'stable', 'nightly', '46nightly'.
+   *   Ex: 'rc', 'stable', 'nightly'
    * @return array
    *   RevDoc
    *   Ex: $result['tar']['Drupal'] = 'https://dist.civicrm.org/foo/civicrm-4.7.12-drupal-20160902.tar.gz';
@@ -277,12 +243,6 @@ class CheckController extends Controller {
       case 'nightly':
         $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
           return $rev['branch'] === 'master';
-        });
-        break;
-
-      case '46nightly':
-        $result = $this->container->get('rev_doc_repository')->findLatest(function($rev) {
-          return $rev['branch'] === '4.6';
         });
         break;
 
@@ -312,37 +272,56 @@ class CheckController extends Controller {
    */
   protected function findHighlights() {
     $highlightFiles = array();
-    $revDocs = array(
-      'STABLE' => $this->findRevByStability('stable'),
-      'RC' => $this->findRevByStability('rc'),
-      'NIGHTLY' => $this->findRevByStability('nightly'),
-      '46NIGHTLY' => $this->findRevByStability('46nightly'),
-    );
-    foreach ($revDocs as $stability => $revDoc) {
-      if ($revDoc === NULL) {
-        continue;
+    $highlights = [
+      'STABLE' => [
+        'title' => 'Stable',
+        'revDoc' => $this->findRevByStability('stable'),
+        'inspect_url' => NULL,
+      ],
+      'RC' => [
+        'title' => 'Release Candidate',
+        'revDoc' => $this->findRevByStability('rc'),
+        'inspect_url' => NULL,
+      ],
+      'NIGHTLY' => [
+        'title' => 'Development',
+        'revDoc' => $this->findRevByStability('nightly'),
+        'inspect_url' => NULL,
+      ],
+    ];
+    $highlights = array_filter($highlights, fn($r) => !empty($r['revDoc']));
+    foreach ($highlights as $stability => &$highlight) {
+      $revDoc = $highlight['revDoc'];
+
+      if (strpos($revDoc['rev'], '-') !== FALSE) {
+        [, $ts] = explode('-', $revDoc['rev']);
+        $highlight['inspect_url'] = $this->generateUrl('browse_branch_build', [
+          'branch' => $revDoc['branch'],
+          'ts' => $ts,
+        ]);
       }
+      else {
+        $highlight['inspect_url'] = $this->generateUrl('release_version', [
+          'version' => $revDoc['version'],
+        ]);
+      }
+
+      $files = [];
       foreach ($revDoc['tar'] as $url) {
         $fileExt = $this->parseFileExt($url);
         $basename = "civicrm-$stability-$fileExt";
-
-        $highlightFiles[$basename] = array(
+        $files[$basename] = $highlightFiles[$basename] = array(
           'rev' => $revDoc['rev'],
           'basename' => $basename,
           'url' => $this->generateUrl('download_file', array(
             'file' => $basename,
           )),
-          'inspect_url' => NULL,
         );
-
-        if (strpos($revDoc['rev'], '-') !== FALSE) {
-          $highlightFiles[$basename]['inspect_url'] = $this->generateUrl('inspect_file', array(
-            'file' => $basename,
-          ));
-        }
       }
+      $highlight['files'] = $files;
     }
-    return $highlightFiles;
+
+    return $highlights;
   }
 
   /**

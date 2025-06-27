@@ -56,4 +56,8 @@ class VersionUtil {
     return $extreme;
   }
 
+  public static function isBetween($low, $lowOp, $target, $highOp, $high): bool {
+    return version_compare($low, $target, $lowOp) && version_compare($target, $high, $highOp);
+  }
+
 }

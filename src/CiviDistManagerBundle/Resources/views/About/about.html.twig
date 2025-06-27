@@ -4,18 +4,6 @@
 {% block stylesheets %}
 {% endblock %}
 
-{% block nav %}
-    [
-    <a href="https://civicrm.org/">CiviCRM Home</a>
-    &gt;
-    <a href="https://civicrm.org/download">Download</a>
-    &gt;
-    <a href="/release{{ prototype ? "?prototype=1" : "" }}">All Releases</a>
-    &gt;
-    {{ version }}
-    ]
-{% endblock %}
-
 {% block body %}
     <fieldset class="fs-summary">
         <legend>Summary</legend>
@@ -37,7 +25,7 @@
             <ul>
                 {% for file in files %}
                     <li>
-                        <a href="/{{ file }}">{{ file }}</a>
+                        <a href="{{ file.url }}">{{ file.basename }}</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -65,11 +53,13 @@
 
     </div>
 
+    {% if notes is defined %}
     <fieldset class="fs-notes">
         <legend>Release Notes</legend>
         <pre id="notes-unrendered" style="display: none">{{ notes }}</pre>
         <div id="notes-rendered"></div>
     </fieldset>
+    {% endif %}
 
 {% endblock %}
 

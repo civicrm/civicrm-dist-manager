@@ -2,24 +2,33 @@
 
 namespace CiviDistManagerBundle\Controller;
 
-use CiviDistManagerBundle\BuildRepository;
+use CiviDistManagerBundle\CacheTrait;
 use CiviDistManagerBundle\GitBrowsers;
 use CiviDistManagerBundle\VersionUtil;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Version;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Landing page for information about a particular version of CiviCRM.
  */
-class AboutController extends Controller {
+class ReleaseController extends Controller {
 
-  const STANDARD_TTL = 3600, ERROR_TTL = 120;
+  use CacheTrait;
+
+  /**
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   */
+  public function __construct($container) {
+    $this->setContainer($container);
+  }
 
   public function listAction(Request $request) {
     return $this->render('CiviDistManagerBundle:About:list.html.twig', [
+      'breadcrumbs' => [
+        ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+        ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+        ['title' => 'All Releases'],
+      ],
       'versions' => array_reverse($this->getGroupedVersions()),
       'prototype' => $request->get('prototype'),
     ]);
@@ -29,6 +38,7 @@ class AboutController extends Controller {
    * Landing page for information about a particular version of CiviCRM.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $version
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
   public function viewAction(Request $request, $version) {
@@ -41,6 +51,12 @@ class AboutController extends Controller {
     $releaseFiles = $this->getReleaseFiles($version);
     if (!empty($releaseFiles)) {
       return $this->render('CiviDistManagerBundle:About:about.html.twig', [
+        'breadcrumbs' => [
+          ['title' => 'CiviCRM Home', 'url' => 'https://civicrm.org/'],
+          ['title' => 'Download', 'url' => 'https://civicrm.org/download'],
+          ['title' => 'All Releases', 'url' => '/release'],
+          ['title' => $version],
+        ],
         'version' => $version,
         'files' => $releaseFiles,
         'notes' => $this->getReleaseNotes($version),
@@ -59,21 +75,11 @@ class AboutController extends Controller {
   }
 
   /**
-   * @return Cache
-   */
-  protected function getCache() {
-    return $this->container->get('civi_upgrade_manager.dist_cache');
-  }
-
-  /**
    * @param string $version
    *   Ex: '5.0.1'.
    * @return string|NULL
    */
   protected function pickRedirectUrl($version) {
-    /**
-     * @var Cache
-     */
     $cache = $this->getCache();
     $cacheId = md5('exists' . $version);
 
@@ -96,7 +102,7 @@ class AboutController extends Controller {
         }
       }
 
-      $cache->save($cacheId, $url, self::STANDARD_TTL);
+      $cache->save($cacheId, $url, $this->standardTtl);
     }
     return $cache->fetch($cacheId);
   }
@@ -137,16 +143,18 @@ class AboutController extends Controller {
 
   /**
    * @param string $version
+   *
    * @return string[]
-   *   List of file names.
-   *   Ex: ['civicrm-1.2.3-drupal.tar.gz', 'civicrm-1.2.3-wordpress.zip']
+   *   List of file names and their URLs.
+   *   Ex: [['basename' => 'civicrm-1.2.3-drupal.tar.gz', 'url' => 'https://....']]
    */
   protected function getReleaseFiles($version) {
     if (!VersionUtil::isWellFormed($version)) {
       throw $this->createNotFoundException("Invalid version");
     }
 
-    return static::cache("files-$version", function() use ($version) {
+    // $files = static::cache(NULL, function() use ($version) {
+    $files = static::cache("files-$version", function() use ($version) {
       /** @var \CiviDistManagerBundle\GStorageUrlFacade $gsu */
       $gsu = $this->container->get('gsu');
       $gsFiles = $gsu->getFiles('gs://civicrm/civicrm-stable/' . $version . '/');
@@ -155,15 +163,24 @@ class AboutController extends Controller {
         $fmtFiles[] = basename($gsFile);
       }
       sort($fmtFiles);
-      return$fmtFiles;
+      return $fmtFiles;
     }, []);
+
+    $result = [];
+    foreach ($files as $file) {
+      $result[] = [
+        'basename' => basename($file),
+        'url' => '/' . basename($file),
+      ];
+    }
+    return $result;
   }
 
   /**
    * @param string $version
    * @return array
    */
-  protected function getReleaseJson($version) {
+  public function getReleaseJson($version) {
     if (!VersionUtil::isWellFormed($version)) {
       throw $this->createNotFoundException("Invalid version");
     }
@@ -198,7 +215,7 @@ class AboutController extends Controller {
         }
       }
       usort($versions, 'version_compare');
-      return$versions;
+      return $versions;
     }, []);
   }
 
@@ -213,38 +230,6 @@ class AboutController extends Controller {
       $result[VersionUtil::getMinor($version)][] = $version;
     }
     return $result;
-  }
-
-  /**
-   * Load some data from the cache - or else lookup the data (and store it
-   * in the cache).
-   *
-   * @param string $cacheId
-   * @param callable $callback
-   * @param null $placeholder
-   * @return mixed|null
-   */
-  protected function cache($cacheId, $callback, $placeholder = NULL) {
-    $cache = $this->getCache();
-    if ($cache->contains($cacheId)) {
-      return $cache->fetch($cacheId);
-    }
-
-    try {
-      $data = $callback();
-      $ttl = self::STANDARD_TTL;
-    }
-    catch (\Throwable $t) {
-      $data = $placeholder;
-      $ttl = self::ERROR_TTL;
-      $this->container->get('logger')->warning("Failed to populate cache item ({cacheId})", [
-        'cacheId' => $cacheId,
-        'exception' => $t,
-      ]);
-    }
-
-    $cache->save($cacheId, $data, $ttl);
-    return $data;
   }
 
 }

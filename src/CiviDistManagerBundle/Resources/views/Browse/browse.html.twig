@@ -4,18 +4,6 @@
 {% block stylesheets %}
 {% endblock %}
 
-{% block nav %}
-    [
-    <a href="https://civicrm.org/">CiviCRM Home</a>
-    &gt;
-    <a href="https://civicrm.org/download">Download</a>
-    &gt;
-    <a href="/latest/">Autobuild</a>
-    &gt;
-    {{ targetBranch }}
-    ]
-{% endblock %}
-
 {% block body %}
     <fieldset class="fs-autobuild">
         <legend>Autobuild</legend>
@@ -27,18 +15,8 @@
         <legend>Browse: <code>{{ targetBranch }}</code></legend>
 
         <ul>
-            {% for buildRec in byTimestamp %}
-                <li>{{ buildRec.ts }}
-                    <ul>
-                        {% for file in buildRec.files %}
-                            <li>
-                                <a href="{{ file._download_url }}">{{ file.basename }}</a>
-                                (<a href="{{ file._inspect_url }}">inspect</a>)
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-
+            {% for folder in folders %}
+                <li><a href="{{ folder }}/">{{ folder }}/</a></li>
             {% endfor %}
         </ul>
     </fieldset>

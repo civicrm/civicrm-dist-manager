@@ -4,7 +4,7 @@ namespace CiviDistManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AboutControllerTest extends WebTestCase {
+class ReleaseControllerTest extends WebTestCase {
 
   /**
    * @param $version

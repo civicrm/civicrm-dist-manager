@@ -15,29 +15,37 @@ download_file:
     path:     /latest/{file}
     defaults: { _controller: CiviDistManagerBundle:Check:download }
 
-inspect_file:
-    path:     /latest/{file}/inspect
-    defaults: { _controller: CiviDistManagerBundle:Check:inspect }
+browse_branch_redir:
+    path:     /latest/branch/{branch}
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
 
 browse_branch:
-    path:     /latest/branch/{branch}
-    defaults: { _controller: CiviDistManagerBundle:Browse:browse }
+    path:     /latest/branch/{branch}/
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:browse }
+
+browse_branch_build_redir:
+    path:     /latest/branch/{branch}/{ts}
+    defaults: { _controller: CiviDistManagerBundle:Redir:append, suffix: '/' }
+
+browse_branch_build:
+    path:     /latest/branch/{branch}/{ts}/
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:view }
 
 download_branch_file:
     path:     /latest/branch/{branch}/{ts}/{basename}
-    defaults: { _controller: CiviDistManagerBundle:Browse:download }
+    defaults: { _controller: CiviDistManagerBundle:AutoBuild:download }
 
 inspect_branch_build:
     path:     /latest/branch/{branch}/{ts}/{basename}/inspect
-    defaults: { _controller: CiviDistManagerBundle:Browse:inspect }
+    defaults: { _controller: CiviDistManagerBundle:Redir:parent, levels: 2 }
 
 release_list:
     path:     /release/
-    defaults: { _controller: CiviDistManagerBundle:About:list }
+    defaults: { _controller: release_controller:listAction }
 
 release_version:
     path:     /release/{version}
-    defaults: { _controller: CiviDistManagerBundle:About:view }
+    defaults: { _controller: release_controller:viewAction }
 
 esr_redir:
     path:     /esr
