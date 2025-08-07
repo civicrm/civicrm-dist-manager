@@ -5,8 +5,9 @@
 {% endblock %}
 
 {% block body %}
+    <a id="summary"></a>
     <fieldset class="fs-summary">
-        <legend>Summary</legend>
+        <legend><a href="#summary">Summary</a></legend>
         <ul>
             <li><strong>Version:</strong> {{ version }}</li>
             <li><strong>Build ID:</strong> {{ jsonDef.rev ?? 'unknown' }}</li>
@@ -19,9 +20,12 @@
 {#        <pre>{{ jsonDef | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>#}
 {#    </fieldset>#}
 
+    <a id="files"></a>
+    <a id="repositories"></a>
     <div class="two-col">
+
         <fieldset class="fs-files">
-            <legend>Files</legend>
+            <legend><a href="#files">Files</a></legend>
             <ul>
                 {% for file in files %}
                     <li>
@@ -32,7 +36,7 @@
         </fieldset>
 
         <fieldset class="fs-details">
-            <legend>Repositories</legend>
+            <legend><a href="#repositories">Repositories</a></legend>
             <br/>
             {% if jsonDef and jsonDef.git %}
             <table class="tbl-repos">
@@ -54,8 +58,9 @@
     </div>
 
     {% if notes is defined %}
+    <a id="release-notes"></a>
     <fieldset class="fs-notes">
-        <legend>Release Notes</legend>
+        <legend><a href="#release-notes">Release Notes</a></legend>
         <pre id="notes-unrendered" style="display: none">{{ notes }}</pre>
         <div id="notes-rendered"></div>
     </fieldset>
