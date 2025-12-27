@@ -136,6 +136,9 @@ class MirrorController extends Controller {
     $client = new Client([
       'allow_redirects' => TRUE,
       'http_errors' => TRUE,
+      'headers' => [
+        'User-Agent' => $_SERVER['HTTP_USER_AGENT'],
+      ]
     ]);
 
     // In principle, it would be preferable to pass-through the stream instead

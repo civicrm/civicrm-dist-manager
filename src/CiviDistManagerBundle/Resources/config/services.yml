@@ -71,7 +71,7 @@ services:
           upstreamUrl: 'https://ftp.drupal.org/files/translations'
           storageUrl: 'gs://civicrm-cache/drupal-l10n'
           ttl: '+7 days'
-          allow: [';^(all|7.x)/(devel|drupal)/;']
+          allow: [';^(all|7.x)/(devel|drupal|login_destination|userprotect|views|webform|webform_civicrm)/;']
         'backdrop-l10n':
           upstreamUrl: 'https://localize.backdropcms.org/files/l10n_packager'
           storageUrl: 'gs://civicrm-cache/backdrop-l10n'
