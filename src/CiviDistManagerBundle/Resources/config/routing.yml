@@ -61,6 +61,12 @@ esr_path:
     requirements:
       path: .+
 
+mirror_path:
+    path:     /mirror/{path}
+    defaults: { _controller: mirror_controller:getAction }
+    requirements:
+        path: .+
+
 joomla_xml:
     path: /joomla.xml
     defaults: { _controller: CiviDistManagerBundle:Joomla:index, suffix: "-joomla.zip" }

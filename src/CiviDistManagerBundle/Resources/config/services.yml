@@ -60,6 +60,24 @@ services:
     class: 'CiviDistManagerBundle\Controller\GenericGcloudController'
     arguments: ['@service_container', '@gsu', 'gs://civicrm-private/civicrm-esr', 'CiviCRM Extended Security Releases']
 
+  mirror_controller:
+    public: true
+    class: 'CiviDistManagerBundle\Controller\MirrorController'
+    arguments:
+      - '@service_container'
+      - '@civi_upgrade_manager.dist_cache'
+      - '@gsu'
+      - 'drupal-l10n':
+          upstreamUrl: 'https://ftp.drupal.org/files/translations'
+          storageUrl: 'gs://civicrm-cache/drupal-l10n'
+          ttl: '+7 days'
+          allow: [';^(all|7.x)/(devel|drupal)/;']
+        'backdrop-l10n':
+          upstreamUrl: 'https://localize.backdropcms.org/files/l10n_packager'
+          storageUrl: 'gs://civicrm-cache/backdrop-l10n'
+          ttl: '+7 days'
+          allow: [';^(all)/(backdropcms)/;']
+
   release_controller:
     public: true
     class: 'CiviDistManagerBundle\Controller\ReleaseController'
