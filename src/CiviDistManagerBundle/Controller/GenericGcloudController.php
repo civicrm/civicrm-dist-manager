@@ -64,7 +64,7 @@ class GenericGcloudController extends Controller {
       throw $this->createNotFoundException("File not found: $path");
     }
 
-    if (empty($path) || $path{strlen($path) - 1} === '/') {
+    if (empty($path) || $path[strlen($path) - 1] === '/') {
       return $this->render('CiviDistManagerBundle:GenericGcloud:browse.html.twig', array(
         'title' => $this->title . (empty($path) ? "" : " ($path)"),
         'children' => $gsu->getChildren($url),
@@ -80,7 +80,7 @@ class GenericGcloudController extends Controller {
     if ($path === NULL || $path === FALSE || $path === '') {
       return '';
     }
-    if ($path{0} === '/') {
+    if ($path[0] === '/') {
       throw new \Exception("Invalid path - Should not begin with '/'");
     }
     if (preg_match(';[^a-zA-Z0-9\-\._\+\/];', $path)) {

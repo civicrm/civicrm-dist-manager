@@ -413,12 +413,12 @@ class UpgradeReport {
   }
 
   public function get($field) {
-    $getter = 'get' . strtoupper($field{0}) . substr($field, 1);
+    $getter = 'get' . strtoupper($field[0]) . substr($field, 1);
     return call_user_func([$this, $getter]);
   }
 
   public function set($field, $value) {
-    $setter = 'set' . strtoupper($field{0}) . substr($field, 1);
+    $setter = 'set' . strtoupper($field[0]) . substr($field, 1);
     return call_user_func([$this, $setter], $value);
   }
 
