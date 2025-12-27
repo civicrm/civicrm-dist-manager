@@ -10,7 +10,7 @@ in
   pkgs.mkShell {
     nativeBuildInputs = buildkit.profiles.base ++ [
 
-      buildkit.pkgs.php74
+      buildkit.pkgs.php80
       buildkit.pins.v2305.nginx
       buildkit.pkgs.loco
       buildkit.pkgs.phpunit8
