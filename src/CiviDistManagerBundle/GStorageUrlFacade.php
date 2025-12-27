@@ -1,10 +1,6 @@
 <?php
 namespace CiviDistManagerBundle;
 
-use Google\Cloud\Storage\Bucket;
-use Google\Cloud\Storage\StorageClient;
-use Google\Cloud\Storage\StorageObject;
-
 /**
  * Class GStorageUrlFacade
  * @package CiviDistManagerBundle
@@ -22,7 +18,7 @@ class GStorageUrlFacade {
   protected $cache;
 
   /**
-   * @var StorageClient
+   * @var \Google\Cloud\Storage\StorageClient
    */
   protected $storage;
 
@@ -42,6 +38,12 @@ class GStorageUrlFacade {
     $this->storage = $storage;
   }
 
+  public function flush(string $url) {
+    [$bucketName, $prefix] = $this->parseUrl($url);
+    $cacheKey = __CLASS__ . '::' . $bucketName . '::files';
+    $this->cache->delete($cacheKey);
+  }
+
   /**
    * Get a list of all direct and indirect children of the URL.
    *
@@ -52,11 +54,11 @@ class GStorageUrlFacade {
    *   Note: Directories from files are distinguished by the trailing "/".
    */
   public function getAll($url) {
-    list ($bucketName, $prefix) = $this->parseUrl($url);
+    [$bucketName, $prefix] = $this->parseUrl($url);
 
     $cacheKey = __CLASS__ . '::' . $bucketName . '::files';
     if (!$this->cache->contains($cacheKey)) {
-      /** @var Bucket $bucket */
+      /** @var \Google\Cloud\Storage\Bucket $bucket */
       $bucket = $this->storage->bucket($bucketName);
       $files = [];
 
@@ -166,12 +168,30 @@ class GStorageUrlFacade {
   /**
    * @param string $url
    *   Ex: 'gs://mybucket/myfolder/foo.txt'
-   * @return StorageObject
+   * @return \Google\Cloud\Storage\StorageObject
    */
   public function createObject($url) {
-    list ($bucketName, $path) = $this->parseUrl($url);
+    [$bucketName, $path] = $this->parseUrl($url);
     $bucket = $this->storage->bucket($bucketName);
     return $bucket->object($path);
+  }
+
+  /**
+   * @param string $url
+   *   Ex: 'gs://my-bucket/some/file.txt'
+   * @param null|\Psr\Http\Message\StreamInterface|resource|string $data
+   * @param array $options
+   *  Ex: ['metadata' => ['contentType' => 'text/plain']]
+   * @return \Google\Cloud\Storage\StorageObject
+   * @see \Google\Cloud\Storage\Bucket::upload()
+   */
+  public function upload(string $url, $data, array $options = []) {
+    [$bucketName, $relPath] = $this->parseUrl($url);
+    $bucket = $this->storage->bucket($bucketName);
+    $options['name'] = $relPath;
+    $result = $bucket->upload($data, $options);
+    $this->flush($url);
+    return $result;
   }
 
   protected function parseUrl($url) {
