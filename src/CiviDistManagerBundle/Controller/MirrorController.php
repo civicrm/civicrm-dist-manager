@@ -74,13 +74,13 @@ class MirrorController extends Controller {
     $publicUrl = preg_replace(';^gs://;', 'https://storage.googleapis.com/', $storageUrl);
 
     if ($this->needsUpdate("mirror_$id", $storageUrl, $mirror['ttl'])) {
-      // return new Response("upload $upstreamUrl to $publicUrl");
+      // return new \Symfony\Component\HttpFoundation\Response("upload $upstreamUrl to $publicUrl");
       $this->transferFile($upstreamUrl, $storageUrl);
       $this->cache->save("mirror_$id", time());
     }
 
     return $this->redirect($publicUrl);
-    // return new Response("redirect to $publicUrl");
+    // return new \Symfony\Component\HttpFoundation\Response("redirect to $publicUrl");
   }
 
   protected function needsUpdate(string $cacheId, string $storageUrl, string $ttl) {
@@ -138,29 +138,31 @@ class MirrorController extends Controller {
       'http_errors' => TRUE,
       'headers' => [
         'User-Agent' => $_SERVER['HTTP_USER_AGENT'],
-      ]
+      ],
     ]);
 
     // In principle, it would be preferable to pass-through the stream instead
     // of buffering in a temp file, but I keep hitting problems in that path, and
     // this is actually good enough for our volume of data. (There may be an issue
     // where we need to receive full dataset before uploading file+checksum.)
-    $tmpFile = tmpfile();
-    if ($tmpFile === FALSE) {
-      throw new \RuntimeException('Failed to create temporary file');
+    $tmpFile = tempnam(sys_get_temp_dir(), 'mirror_');
+
+    try {
+      chmod($tmpFile, 0700);
+      $response = $client->request('GET', $srcUrl, [
+        'sink' => $tmpFile,
+      ]);
+      $contentType = $response->getHeaderLine('Content-Type') ?: 'application/octet-stream';
+
+      $this->gsu->upload($destUrl, $tmpFile, [
+        'metadata' => [
+          'contentType' => $contentType,
+        ],
+      ]);
     }
-
-    $response = $client->request('GET', $srcUrl, [
-      'sink' => $tmpFile,
-    ]);
-    $contentType = $response->getHeaderLine('Content-Type') ?: 'application/octet-stream';
-    rewind($tmpFile);
-
-    $this->gsu->upload($destUrl, $tmpFile, [
-      'metadata' => [
-        'contentType' => $contentType,
-      ],
-    ]);
+    finally {
+      unlink($tmpFile);
+    }
   }
 
 }
