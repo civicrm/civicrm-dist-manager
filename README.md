@@ -123,6 +123,13 @@ XML feed of public/stable releases of `civicrm-*-joomla.zip` and
 
 See also: https://docs.joomla.org/Deploying_an_Update_Server
 
+### Route: `GET /mirror/{service}/{path}`
+
+A quick-and-dirty caching proxy for select resources. Example `service`s:
+
+* `drupal-l10n` (aka `https://ftp.drupal.org/files/translations`)
+* `backdrop-l10n` (aka `https://localize.backdropcms.org/files/l10n_packager`)
+
 ### Route: `GET /check` (Web service)
 
 Use this end-point to check for metadata about an upgrade
