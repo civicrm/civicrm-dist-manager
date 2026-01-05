@@ -23,6 +23,13 @@ class MirrorController extends Controller {
   protected $cache;
 
   /**
+   * Quick and dirty workaround - GCloud public URLs are cached within CDN.
+   * Add nonce to force one-time reload.
+   * @var string
+   */
+  protected $suffix = '?r=1';
+
+  /**
    * @var array
    *   Each item is keyed by a symbolic name and specifies the following properties:
    *   - upstreamUrl: string, e.g. 'https://example.com/download'
@@ -71,7 +78,7 @@ class MirrorController extends Controller {
     $id = substr($checksum, 0, 4) . $checksum . '/' . basename($relPath);
     /** @var \Google\Cloud\Storage\Bucket $bucket */
     $storageUrl = $mirror['storageUrl'] . '/' . $id;
-    $publicUrl = preg_replace(';^gs://;', 'https://storage.googleapis.com/', $storageUrl);
+    $publicUrl = preg_replace(';^gs://;', 'https://storage.googleapis.com/', $storageUrl) . $this->suffix;
 
     if ($this->needsUpdate("mirror_$id", $storageUrl, $mirror['ttl'])) {
       // return new \Symfony\Component\HttpFoundation\Response("upload $upstreamUrl to $publicUrl");
@@ -154,7 +161,8 @@ class MirrorController extends Controller {
       ]);
       $contentType = $response->getHeaderLine('Content-Type') ?: 'application/octet-stream';
 
-      $this->gsu->upload($destUrl, $tmpFile, [
+      $tmpFileHandle = fopen($tmpFile, 'r');
+      $this->gsu->upload($destUrl, $tmpFileHandle, [
         'metadata' => [
           'contentType' => $contentType,
         ],
